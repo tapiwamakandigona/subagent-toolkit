@@ -12,6 +12,10 @@ Usage:
 Prints markdown for each URL to stdout (separated by a header line) and
 caches raw HTML on disk so re-runs never re-fetch (bypass with --no-cache).
 Checks robots.txt before fetching (skip with --no-robots).
+
+Known limitation: only the URL *scheme* is validated — http(s) requests to
+internal/link-local addresses (e.g. 169.254.169.254) are still reachable, and
+the scheme of redirect targets is not re-validated.
 """
 
 from __future__ import annotations
@@ -123,10 +127,11 @@ def decode_body(resp) -> str:
     if ctype and not TEXTUAL_CONTENT_RE.match(ctype):
         raise FetchError(f"binary or non-text content-type {ctype!r}: {resp.url}")
     charset = resp.headers.get_content_charset() or "utf-8"
+    raw = resp.read()  # read once: the stream is exhausted after this
     try:
-        return resp.read().decode(charset, errors="replace")
+        return raw.decode(charset, errors="replace")
     except LookupError:  # unknown charset label
-        return resp.read().decode("utf-8", errors="replace")
+        return raw.decode("utf-8", errors="replace")
 
 
 def fetch(url: str, cache_dir: pathlib.Path, use_cache: bool = True,
@@ -259,6 +264,9 @@ def main() -> int:
     ap.add_argument("--no-robots", action="store_true",
                     help="skip the robots.txt check")
     args = ap.parse_args()
+    if args.delay < 0:
+        print("[warn] --delay must be >= 0; using 0", file=sys.stderr)
+        args.delay = 0.0
 
     for i, url in enumerate(args.urls):
         if i > 0:

@@ -155,6 +155,17 @@ def test_missing_charset_defaults_to_utf8(tmp_path, monkeypatch):
     assert "héllo" in body
 
 
+def test_unknown_charset_label_falls_back_to_utf8(tmp_path, monkeypatch):
+    # Regression: the LookupError branch used to call resp.read() a second
+    # time on the exhausted stream and return an empty body.
+    payload = ("<html>" + "héllo wörld " * 60 + "</html>").encode("utf-8")
+    _install_fake_response(monkeypatch, payload, charset="bogus-enc")
+    body = fetch_page.fetch("http://example.test/bogus-charset", tmp_path,
+                            respect_robots=False)
+    assert body != ""
+    assert "héllo wörld" in body
+
+
 def test_binary_content_type_rejected(tmp_path, monkeypatch):
     _install_fake_response(monkeypatch, b"%PDF-1.7 ....",
                            content_type="application/pdf")

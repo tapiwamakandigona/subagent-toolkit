@@ -35,6 +35,9 @@ jobs:
       - name: validate skill evals
         run: python3 harness/scripts/run_evals.py --validate
 
+      - name: check for leftover placeholders (skills, agents, harness)
+        run: python3 harness/scripts/check_placeholders.py skills agents harness
+
       - name: bootstrap smoke test (sh)
         run: sh tests/smoke_bootstrap.sh
 

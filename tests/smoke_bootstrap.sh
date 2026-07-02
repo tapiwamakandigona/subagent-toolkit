@@ -102,6 +102,53 @@ run_suite() { # $1=shell
     fail "$shell: run-from-checkout primer does not point at the checkout"
   fi
   check_output "$shell/self-dir" "$out4"
+
+  # --- 5. ABILITIES_REF: pin a tag on an EXISTING checkout ------------------
+  # Build a file:// remote fixture with two tags, clone it (lands on the tip),
+  # then re-run bootstrap with ABILITIES_REF pointing at the OLDER tag. The
+  # existing-checkout path must fetch the tag ref and check it out (exit 0).
+  fixroot=$(mktemp -d)   # no spaces: file:// URLs and spaces don't mix
+  fixture="$fixroot/remote"
+  mkdir -p "$fixture"
+  (
+    cd "$fixture"
+    git init --quiet
+    git config user.email smoke@example.invalid
+    git config user.name smoke
+    cp "$REPO_ROOT/bootstrap.sh" .
+    printf '# fixture v1\n' >README.md
+    mkdir -p agents
+    printf 'placeholder\n' >agents/.keep
+    git add -A
+    git commit --quiet -m 'fixture: first release'
+    git tag v9.9.8-test
+    printf '# fixture v2\n' >README.md
+    git commit --quiet -am 'fixture: second release'
+    git tag v9.9.9-test
+  )
+  pin_target="$work/pin target"
+  git clone --quiet "file://$fixture" "$pin_target" 2>/dev/null
+  out5="$work/out5.txt"
+  if (cd "$work" && ABILITIES_REPO="file://$fixture" ABILITIES_REF=v9.9.8-test \
+        "$shell" "$REPO_ROOT/bootstrap.sh" "$pin_target" >"$out5" 2>"$work/err5.txt"); then
+    pass "$shell: tag pin on existing checkout exits 0"
+  else
+    fail "$shell: tag pin on existing checkout failed (see $work/err5.txt)"
+  fi
+  want=$(git -C "$fixture" rev-parse "v9.9.8-test^{commit}")
+  got=$(git -C "$pin_target" rev-parse HEAD 2>/dev/null || echo none)
+  if [ "$got" = "$want" ]; then
+    pass "$shell: existing checkout is pinned at the requested tag"
+  else
+    fail "$shell: HEAD is $got, expected tag commit $want"
+  fi
+  if grep -q 'Pinned to ref: v9.9.8-test' "$work/err5.txt"; then
+    pass "$shell: pin confirmation logged to stderr"
+  else
+    fail "$shell: no pin confirmation in stderr (see $work/err5.txt)"
+  fi
+  check_output "$shell/tag-pin" "$out5"
+  rm -rf "$fixroot"
 }
 
 run_suite sh

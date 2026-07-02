@@ -61,12 +61,33 @@ require_git() {
 checkout_ref() { # $1=dir
   [ -n "$REF" ] || return 0
   require_git
-  if ! git -C "$1" fetch --depth 1 origin "$REF" >/dev/null 2>&1; then
+  # Make the ref resolvable locally. A bare `git fetch origin <ref>` only
+  # updates FETCH_HEAD (no local tag/branch ref), so try explicit refspecs
+  # first: tag, then branch, then a plain fetch (covers commit SHAs and
+  # servers that reject refspec fetches), then a full fetch as last resort.
+  fetched=0
+  if git -C "$1" fetch --depth 1 origin \
+       "refs/tags/$REF:refs/tags/$REF" >/dev/null 2>&1; then
+    fetched=1
+  elif git -C "$1" fetch --depth 1 origin \
+         "refs/heads/$REF:refs/remotes/origin/$REF" >/dev/null 2>&1; then
+    fetched=1
+  elif git -C "$1" fetch --depth 1 origin "$REF" >/dev/null 2>&1; then
+    fetched=1
+  else
     git -C "$1" fetch origin >/dev/null 2>&1 || true
   fi
-  git -C "$1" checkout --quiet "$REF" 2>/dev/null \
-    || die "could not check out ABILITIES_REF='$REF' in $1 (unknown ref, or offline?)"
-  log "==> Pinned to ref: $REF"
+  if git -C "$1" checkout --quiet "$REF" 2>/dev/null; then
+    log "==> Pinned to ref: $REF"
+    return 0
+  fi
+  # The plain-fetch path may have left the ref only in FETCH_HEAD.
+  if [ "$fetched" -eq 1 ] \
+       && git -C "$1" checkout --quiet FETCH_HEAD 2>/dev/null; then
+    log "==> Pinned to ref: $REF (detached at FETCH_HEAD)"
+    return 0
+  fi
+  die "could not check out ABILITIES_REF='$REF' in $1 (unknown ref, or offline?)"
 }
 
 # ---------------------------------------------------------------- install ---
@@ -86,6 +107,9 @@ if [ -f "$TARGET/bootstrap.sh" ]; then
     checkout_ref "$TARGET"
   else
     log "==> Using existing ability pack in $TARGET (not a git checkout)"
+    if [ -n "$REF" ]; then
+      log "    warning: ABILITIES_REF ignored: not a git checkout"
+    fi
   fi
 elif [ "$EXPLICIT_TARGET" -eq 0 ] && [ -f "$SELF_DIR/README.md" ] && [ -d "$SELF_DIR/agents" ]; then
   # Running from inside a checkout and no explicit target — no clone needed.

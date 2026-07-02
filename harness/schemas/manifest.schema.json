@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://raw.githubusercontent.com/tapiwamakandigona/subagent-toolkit/main/harness/schemas/manifest.schema.json",
   "title": "subagent-toolkit manifest",
-  "description": "Output of `python3 harness/scripts/manifest.py <root>`. Deliberately tolerant (additionalProperties: true) so new fields such as license/metadata can be added without breaking consumers.",
+  "description": "Output of `python3 harness/scripts/manifest.py <root>`. Deliberately tolerant (additionalProperties: true) so new emitted fields can be added without breaking consumers.",
   "type": "object",
   "required": ["toolkit", "root", "skills", "agents", "prompts"],
   "additionalProperties": true,
@@ -31,6 +31,11 @@
       "type": "array",
       "description": "Lint warnings. Present only when at least one item has missing or invalid frontmatter. `manifest.py --check` exits non-zero when this is non-empty.",
       "items": { "type": "string" }
+    },
+    "info": {
+      "type": "array",
+      "description": "Softer lint notes (e.g. missing optional frontmatter keys). Present only when non-empty; never fails `--check`.",
+      "items": { "type": "string" }
     }
   },
   "definitions": {
@@ -57,13 +62,9 @@
           "description": "Bundled reference/script files, relative to root.",
           "items": { "type": "string" }
         },
-        "license": { "type": "string" },
-        "metadata": {
-          "type": "object",
-          "additionalProperties": true,
-          "properties": {
-            "version": { "type": "string" }
-          }
+        "version": {
+          "type": "string",
+          "description": "The skill's frontmatter metadata.version, flattened. Present only when the skill declares one."
         }
       }
     },
@@ -82,12 +83,7 @@
           "type": "string",
           "description": "One of: coordinator | readonly | sandbox | external (free text tolerated for older checkouts)."
         },
-        "recommended_model": { "type": "string" },
-        "tools": {
-          "type": "string",
-          "description": "Claude-Code-native comma-separated tool allowlist, when the role declares one."
-        },
-        "model": { "type": "string" }
+        "recommended_model": { "type": "string" }
       }
     },
     "prompt": {
