@@ -1,0 +1,97 @@
+{
+  "skill": "self-verification",
+  "cases": [
+    {
+      "id": "empirical-not-plausible",
+      "prompt": "You've written a script and it 'looks correct.' According to the verify-before-submit loop, what must happen before you report it done?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)run|execute"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)empirical|actually|test"
+        },
+        {
+          "type": "not_contains",
+          "value": "looks right is enough"
+        }
+      ]
+    },
+    {
+      "id": "reread-request",
+      "prompt": "You're about to submit a deliverable after a long multi-hour task. What specific re-reading step does the skill require and what failure does it catch?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)re-?read.{0,80}(original|request)|original request"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)drift|nearby question|answered.{0,60}(different|wrong)"
+        }
+      ]
+    },
+    {
+      "id": "render-visual",
+      "prompt": "You generated an HTML report. The code has no errors. What verification does visual output require?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)render|screenshot|open"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)look|inspect|actual size|eyes"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)overflow|clip|contrast|broken|worst case"
+        }
+      ]
+    },
+    {
+      "id": "verify-side-effects",
+      "prompt": "Your script reports it moved 300 files successfully. What do you do before reporting completion?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)list|ls|re-?read|check.{0,60}director|confirm.{0,80}(actually|happened|exist)"
+        },
+        {
+          "type": "not_contains",
+          "value": "trust the success message"
+        }
+      ]
+    },
+    {
+      "id": "fix-then-full-recheck",
+      "prompt": "During self-review you find and fix one error in your output. Are you done? What does the skill require?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)re-?run|re-?verify|full check|whole check|again"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)fix.{0,80}(introduce|regress|new)"
+        }
+      ]
+    },
+    {
+      "id": "disclose-limitations",
+      "prompt": "You find a problem in your deliverable that you cannot fix within the remaining budget. What do you do?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)disclose|flag|prominent|state|report"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)(not|never|don'?t|rather than).{0,40}(hide|hiding|bury)|hiding"
+        }
+      ]
+    }
+  ]
+}

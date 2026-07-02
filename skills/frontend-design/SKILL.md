@@ -1,6 +1,9 @@
 ---
 name: frontend-design
 description: Design direction for building web UI that doesn't look like generic AI output. Covers committing to a bold aesthetic before writing code, typography and spacing systems, color discipline, and an iterative review-by-screenshot loop. Use when building any user-facing interface — landing pages, dashboards, apps, or components — where visual quality matters.
+license: MIT
+metadata:
+  version: "1.1.0"
 ---
 
 # Frontend Design
@@ -23,7 +26,7 @@ Typography is 80% of perceived design quality:
 
 - **Pick one distinctive display face + one workhorse body face.** Never default to the system stack or the same overused sans for both. Serif/sans contrast, or a characterful grotesque, immediately de-generifies a page.
 - **Establish a type scale** and stick to it, e.g. `12 / 14 / 16 / 20 / 28 / 40 / 64px`. Ad-hoc font sizes are the #1 tell of unsystematic design.
-- Big is a design decision: headlines at 56–96px with tight line-height (1.0–1.1) and slight negative letter-spacing read as intentional. Body text: 16–18px, line-height 1.5–1.7, measure 60–75 characters.
+- Big is a design decision: headlines at 56–96px with tight line-height (1.0–1.1) and slight negative letter-spacing read as intentional. Body text: 16–18px, line-height 1.5–1.7, measure 60–75 characters — unless the chosen direction dictates otherwise (e.g. Dense Pro Tool runs 12–14px deliberately).
 - Use weight and size for hierarchy before reaching for color.
 
 ## 3. Spacing system

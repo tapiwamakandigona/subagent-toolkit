@@ -1,6 +1,9 @@
 ---
 name: planning-and-decomposition
 description: Converts a fuzzy objective into a staged, executable plan. Covers clarifying the definition of done, structuring a todo list, ordering work by dependencies, placing milestone checkpoints, and recognizing when to replan versus push through. Use at the start of any multi-step task, and again whenever reality diverges from the plan.
+license: MIT
+metadata:
+  version: "1.1.0"
 ---
 
 # Planning & Decomposition
@@ -18,7 +21,7 @@ Also capture **constraints** (deadline, budget, tools available, things you must
 Rules for good decomposition:
 
 - **Each step has an observable output** — a file, a passing test, a decision recorded. "Understand the codebase" is not a step; "write a 10-line summary of the request flow in notes.md" is.
-- **Right granularity:** steps of roughly 5–30 minutes of work. Finer wastes overhead; coarser hides being stuck.
+- **Right granularity:** one focused tool-session producing one verifiable artifact per step (roughly 5–30 minutes of human-equivalent work). Finer wastes overhead; coarser hides being stuck.
 - **Front-load risk:** do the step most likely to invalidate the whole approach *first* (the unknown API, the data that might not exist, the permission you might not have). Cheap discovery beats expensive rework.
 - **Separate discovery from execution.** If you don't know enough to plan phase 2, make "investigate X, then replan" a step — don't fabricate detailed steps you'll ignore.
 

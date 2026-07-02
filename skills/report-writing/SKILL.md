@@ -1,6 +1,9 @@
 ---
 name: report-writing
 description: Produces executive-quality written deliverables. Covers TL;DR-first structure, citing evidence for claims, choosing tables versus prose, calibrating tone to the audience, and length discipline. Use when the deliverable is a written document — status updates, research summaries, analyses, memos, or recommendations — read by busy people.
+license: MIT
+metadata:
+  version: "1.1.0"
 ---
 
 # Report Writing
@@ -32,7 +35,7 @@ TL;DR → Recommendation / Answer → Key findings (with evidence)
 
 ## 3. Evidence discipline
 
-- Every material claim carries its evidence inline: a number, a citation, a link, a test result. "Latency improved significantly" → "p95 latency fell 340ms → 120ms (load test, 2026-01-15)."
+- Every material claim carries its evidence inline: a number, a citation, a link, a test result. "Latency improved significantly" → "p95 latency fell 340ms → 120ms (load test, 2024-03-15)."
 - Distinguish observation ("the logs show X"), inference ("which suggests Y"), and opinion ("I recommend Z"). Blurring these three is how reports lose trust.
 - State confidence honestly: *confirmed / likely / uncertain*. A report that flags its own weak points reads as more credible, not less.
 - Numbers get units, dates, and sources. Comparisons get baselines ("40% cheaper *than what*?").
@@ -73,3 +76,5 @@ Universal rules: active voice; verbs over nominalizations ("we decided" not "a d
 - [ ] Tone matches the named audience
 - [ ] One −20% editing pass completed
 - [ ] Read once end-to-end for internal contradictions
+
+*Related repo asset: for subagent→orchestrator handoff reports specifically, [`prompts/handoff-report.md`](../../prompts/handoff-report.md) defines the standard shape — keep the two consistent.*

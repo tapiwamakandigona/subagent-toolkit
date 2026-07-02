@@ -1,0 +1,123 @@
+{
+  "skill": "prompt-engineering",
+  "cases": [
+    {
+      "id": "context-completeness",
+      "prompt": "You're about to spawn a subagent to refactor a module. What must the brief contain, given the subagent knows nothing about your conversation?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)objective|goal|done"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)constraint"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)output.{0,40}(format|contract|schema)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)file path|context|relevant fact"
+        }
+      ]
+    },
+    {
+      "id": "ordering",
+      "prompt": "Your delegation prompt contains a 2,000-line source file and 10 lines of instructions. How do you order them and why?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)(reference|document|code|file|material).{0,120}(top|first|beginning)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)instruction.{0,120}(bottom|end|last)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)weight|attention|dropped|buried"
+        }
+      ]
+    },
+    {
+      "id": "escape-hatch",
+      "prompt": "What single instruction prevents a delegate model from fabricating results when it hits a blocker, and why does it work?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)say so|state.{0,60}explicit|admit|cannot complete|ambiguous"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)fabricat|guess|invent|make.{0,20}up"
+        }
+      ]
+    },
+    {
+      "id": "schema-nulls",
+      "prompt": "Design the rules for a JSON output schema where some fields may be unknowable by the delegate.",
+      "checks": [
+        {
+          "type": "contains",
+          "value": "null"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)(never|not|don'?t).{0,60}(omit|invent|guess|fabricat)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)status|confidence"
+        }
+      ]
+    },
+    {
+      "id": "few-shot-selection",
+      "prompt": "You have 12 example outputs of varying quality to include as few-shot examples. How many do you use and how do you pick?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "1[–-]3|one to three|2[–-]3"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)edge case|tricky|variance"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)imitat|copy|mimic|steer"
+        }
+      ]
+    },
+    {
+      "id": "untrusted-fencing",
+      "prompt": "Your pipeline passes scraped web content into an LLM for analysis. How do you structure the prompt to prevent the content from hijacking the task?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)fence|delimit|tag|separate|label"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)data.{0,60}not instruction|untrusted|not instructions to follow"
+        }
+      ]
+    },
+    {
+      "id": "template-regression",
+      "prompt": "You've just edited a reusable prompt template that several pipelines depend on. What do you do before shipping the edit?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)regression|known-good|test case"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)re-?run|still pass"
+        }
+      ]
+    }
+  ]
+}
