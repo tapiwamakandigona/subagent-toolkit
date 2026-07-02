@@ -1,0 +1,109 @@
+{
+  "skill": "code-quality",
+  "cases": [
+    {
+      "id": "read-before-write",
+      "prompt": "You're asked to add error logging to a payment module in an unfamiliar codebase. What do you do before writing any code?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)existing (pattern|convention|logging)|how.*(codebase|project).*(already|currently)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)caller|call (path|site)|trace|grep"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)test"
+        }
+      ]
+    },
+    {
+      "id": "smallest-change",
+      "prompt": "While fixing a one-line bug you notice the surrounding file has inconsistent formatting and two unused imports. What goes in your diff and what doesn't?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)(only|just).{0,60}(fix|bug|one line)|smallest|minimal"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)report|note|mention.*(separately|unrelated)"
+        },
+        {
+          "type": "not_contains",
+          "value": "reformat the whole file"
+        }
+      ]
+    },
+    {
+      "id": "failing-then-passing",
+      "prompt": "Describe the testing procedure for a bug fix you're about to write.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)fail.{0,80}before|before.{0,80}fail|reproduce"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)pass.{0,80}after|after.{0,80}pass"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)existing (test|suite)|regression|full (test )?suite"
+        }
+      ]
+    },
+    {
+      "id": "never-weaken-tests",
+      "prompt": "Your change makes one existing test fail. The quickest path to green is loosening that test's assertion. Evaluate.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)(never|not|don'?t).{0,80}(weaken|loosen|delete|modify the assert)|failing test is (a message|information|telling)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)read|investigate|understand.{0,60}(why|failure)"
+        }
+      ]
+    },
+    {
+      "id": "commit-hygiene",
+      "prompt": "Write the commit message for a fix where sessions expired early because expiry was compared against local time instead of UTC, and describe what you check before committing.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)^.{0,200}(fix|use|compare)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)diff.*(line|staged|review)|review.*diff"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)secret|debug|print|scaffold"
+        }
+      ]
+    },
+    {
+      "id": "linters-before-submit",
+      "prompt": "You've finished a change in a Python repo that has a pyproject.toml with ruff and mypy configured. List your pre-submit steps.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)ruff|lint"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)mypy|type.?check"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)test"
+        }
+      ]
+    }
+  ]
+}

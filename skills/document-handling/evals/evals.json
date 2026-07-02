@@ -1,0 +1,119 @@
+{
+  "skill": "document-handling",
+  "cases": [
+    {
+      "id": "render-and-inspect",
+      "prompt": "You've generated a 12-slide pptx deck programmatically and the code ran without errors. Is it ready to deliver? What do you do before submitting it?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)render|convert.*pdf|screenshot|image"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)inspect|look|view|examine|check.*(page|slide)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)overflow|clip|truncat|layout|placeholder"
+        }
+      ]
+    },
+    {
+      "id": "template-over-scratch",
+      "prompt": "You must produce a client-facing Word report matching the company's branded document style. You have a previous branded report available. How do you produce the new one?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)template"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)style"
+        },
+        {
+          "type": "not_contains",
+          "value": "build the formatting from scratch"
+        }
+      ]
+    },
+    {
+      "id": "pdf-not-editable",
+      "prompt": "A stakeholder asks you to 'fix a paragraph' in a 30-page designed PDF. The original source document is available. What's the right approach?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)source|original|regenerat|re-?export|re-?render"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)(edit|modify).{0,80}pdf.{0,120}(avoid|last resort|break|fragile|not|don't)|pdf.{0,80}(output|not.*edit)"
+        }
+      ]
+    },
+    {
+      "id": "xlsx-real-numbers",
+      "prompt": "You're writing monetary values like 1,234.50 and dates into an xlsx report that finance will sort and sum. How do you write these cells?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)number format|number_format"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)(real|actual|typed|numeric) (number|value)|as (a )?(number|float|datetime)|not.*(string|text)"
+        },
+        {
+          "type": "not_contains",
+          "value": "formatted strings"
+        }
+      ]
+    },
+    {
+      "id": "formula-evaluation",
+      "prompt": "Your Python script writes formulas into an xlsx with openpyxl and then reads cell values back to verify totals. The reads return the formula strings. Why, and how do you actually verify the computed values?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)openpyxl.{0,160}(not|never|doesn'?t).{0,60}(evaluat|calculat|comput)|(not|never|doesn'?t).{0,60}evaluat.{0,80}formula"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)libreoffice|excel|recalculat|compute (in|with) python|data_only"
+        }
+      ]
+    },
+    {
+      "id": "placeholder-leak",
+      "prompt": "List the final checks you run on a generated docx immediately before sending it to a customer.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)placeholder|\\{\\{|TODO|lorem"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)render|pdf|open|view|inspect"
+        }
+      ]
+    },
+    {
+      "id": "lossy-roundtrip",
+      "prompt": "To edit three sentences in a heavily formatted docx, a colleague suggests converting it to markdown, editing, and converting back. Evaluate this plan.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)lossy|lose|destroy|drop|strip"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)style|format|header|footer"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)native|python-docx|edit.*(docx|in place|directly)"
+        }
+      ]
+    }
+  ]
+}

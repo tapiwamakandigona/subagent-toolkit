@@ -1,0 +1,119 @@
+{
+  "skill": "data-analysis",
+  "cases": [
+    {
+      "id": "profile-before-analysis",
+      "prompt": "You are given sales.csv (about 50,000 rows, columns: order_id, region, price, quantity, order_date). Compute average order value by region. Describe exactly what you would do, in order, before reporting the averages.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)null|missing"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)row count|number of rows|count.*rows"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)dtype|data type|typed as|loaded as"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)duplicate"
+        }
+      ]
+    },
+    {
+      "id": "reproducible-script",
+      "prompt": "A stakeholder asks for the median session duration from events.parquet. Explain how you would produce and deliver this number so it can be trusted and audited later.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)script|\\.py|code file"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)reproduc|re-run|rerun|audit"
+        },
+        {
+          "type": "not_contains",
+          "value": "just run it in the REPL"
+        }
+      ]
+    },
+    {
+      "id": "denominator-discipline",
+      "prompt": "Draft one sentence reporting that 240 of 2,000 trial users converted, for an executive summary.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "12\\s?%|12 percent"
+        },
+        {
+          "type": "regex",
+          "value": "2,?000"
+        }
+      ]
+    },
+    {
+      "id": "simpsons-paradox",
+      "prompt": "Overall, Clinic A has a higher success rate than Clinic B, but you have per-severity data available. What must you check before reporting that Clinic A is better, and why?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)simpson|confound|per-group|subgroup|break.*down|stratif"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)revers|contradict|opposite|flip"
+        }
+      ]
+    },
+    {
+      "id": "skewed-distribution",
+      "prompt": "You need to report typical API latency from a dataset where most requests take ~50ms but a few take 30s. Which summary statistics do you report and why?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)median"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)p9[059]|percentile"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)mean.*(skew|outlier|mislead)|(skew|outlier).*mean"
+        }
+      ]
+    },
+    {
+      "id": "chart-vs-sentence",
+      "prompt": "You have exactly three numbers: revenue for Q1, Q2, and Q3. The trend is a simple steady rise. Should you present this as a chart, a table, or a sentence? Justify.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)sentence"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)chart.*(not|unnecessary|decoration|overkill)|(not|unnecessary).*chart"
+        }
+      ]
+    },
+    {
+      "id": "raw-data-immutable",
+      "prompt": "During cleaning you find 47 rows with null prices in the source CSV. Describe how you handle them and what you record.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)(never|not|don't|do not).*(modify|edit|overwrit|change).*(raw|source|original)|raw.*(untouched|unchanged|read-only)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)log|record|report|document|disclos"
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,9 @@
 ---
 name: web-data-extraction
 description: Patterns for fetching and extracting data from websites reliably and politely. Covers fetch-to-markdown pipelines, pagination strategies, rate limiting and robots etiquette, structured extraction into schemas, and validating scraped data before use. Use when a task requires collecting data from web pages, APIs, or feeds at more than trivial scale.
+license: MIT
+metadata:
+  version: "1.1.0"
 ---
 
 # Web Data Extraction
@@ -26,11 +29,11 @@ For content pages (articles, docs, listings), the robust pipeline is:
 fetch HTML → strip boilerplate (nav/footer/ads) → convert to markdown → extract from markdown
 ```
 
-Markdown conversion normalizes away most markup churn and makes content LLM-friendly. See [scripts/fetch_page.py](scripts/fetch_page.py) for a reference implementation with retries, timeouts, and politeness built in.
+Markdown conversion normalizes away most markup churn and makes content LLM-friendly. See [scripts/fetch_page.py](scripts/fetch_page.py) for a starting-point fetcher with retries, timeouts, caching, robots.txt checking, and backoff — adapt it to the target site rather than treating it as complete.
 
 Fetching rules:
 
-- Set a **descriptive User-Agent**, a timeout (10–30s), and retries with exponential backoff + jitter (e.g. 1s, 2s, 4s) on 429/5xx/timeouts only. Never retry 4xx other than 429.
+- Set a **descriptive User-Agent**, a timeout (10–30s), and retries with exponential backoff + jitter (e.g. 1s, 2s, 4s) on 429/5xx/timeouts only. Never retry 4xx other than 429/408.
 - **Cache raw responses to disk** keyed by URL before any parsing. Re-running extraction must not mean re-fetching. This also preserves evidence of what you actually saw.
 - Detect soft failures: HTTP 200 pages that are actually error/consent/captcha pages. Check for expected content markers, not just status codes.
 - JavaScript-rendered pages: static fetch returns an empty shell — detect this (tiny body, no target content) and switch to a real browser tool rather than parsing the shell.

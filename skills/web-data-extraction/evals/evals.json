@@ -1,0 +1,127 @@
+{
+  "skill": "web-data-extraction",
+  "cases": [
+    {
+      "id": "front-door-first",
+      "prompt": "You need product data from an e-commerce site. What do you check for before writing any HTML scraper?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)API"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)sitemap|feed|RSS|JSON-?LD|__NEXT_DATA__|hidden JSON|XHR"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)robots"
+        }
+      ]
+    },
+    {
+      "id": "retry-policy",
+      "prompt": "Design the retry policy for a fetcher: which HTTP status codes get retried and which never do?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "429"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)5xx|500|503"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)backoff"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)(4xx|400|404).{0,120}(no|not|never)|never retry"
+        }
+      ]
+    },
+    {
+      "id": "cache-raw",
+      "prompt": "Your extraction logic has a bug and you need to re-run it over 2,000 already-fetched pages. What should have been done at fetch time to make this cheap, and why else does it matter?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)cache|save|store.{0,60}(raw|response|disk)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)re-?fetch|evidence|provenance|reproduc"
+        }
+      ]
+    },
+    {
+      "id": "pagination-totals",
+      "prompt": "A site says '1,240 results' and your scraper collected 1,003 items without errors. Is the job done?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)(no|not done|incomplete|missing)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)truncat|missing page|pagination|silent"
+        },
+        {
+          "type": "regex",
+          "value": "1,?240"
+        }
+      ]
+    },
+    {
+      "id": "soft-failure",
+      "prompt": "All 500 fetched pages returned HTTP 200. Does that mean the fetch succeeded? What do you check?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)soft fail|captcha|consent|error page|empty shell"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)content marker|expected content|not just status"
+        }
+      ]
+    },
+    {
+      "id": "rate-limit-politeness",
+      "prompt": "What request rate do you default to when scraping a site without documented limits, and how do you respond to a 429?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)1 request|one request|req(uest)?s?/s|per second"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)retry-?after"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)back.?off"
+        }
+      ]
+    },
+    {
+      "id": "extraction-nulls",
+      "prompt": "During structured extraction, a price field is missing on some pages. What does the extractor output for those records and what else happens?",
+      "checks": [
+        {
+          "type": "contains",
+          "value": "null"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)log|warn"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)(not|never).{0,60}(fabricat|guess|invent|default)|fabricat"
+        }
+      ]
+    }
+  ]
+}

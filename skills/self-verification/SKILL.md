@@ -1,6 +1,9 @@
 ---
 name: self-verification
 description: The verify-before-submit loop for agent output. Covers rubric-based self-review, empirically testing your own claims, code, and numbers, render-and-inspect verification for visual artifacts, and a taxonomy of the most common agent failure modes to check against. Use before submitting any deliverable — code, reports, data, documents, or UI — especially when no human will review intermediate steps.
+license: MIT
+metadata:
+  version: "1.1.0"
 ---
 
 # Self-Verification
@@ -71,3 +74,5 @@ Check output against the common failure modes in [references/failure-taxonomy.md
 - Not re-reading your output and nodding.
 - Not "the tool returned success" (check the actual artifact).
 - Not restating confidence in stronger words. Confidence must come from evidence you can point to.
+
+*Related repo asset: [`prompts/self-review-rubric.md`](../../prompts/self-review-rubric.md) is the fill-in template version of the §1 rubric — keep the two consistent.*
