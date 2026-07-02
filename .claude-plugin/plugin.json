@@ -1,0 +1,16 @@
+{
+  "name": "subagent-toolkit",
+  "displayName": "Subagent Toolkit",
+  "version": "1.1.0",
+  "description": "An ability pack for orchestrated subagents: 13 skills (research, code quality, report writing, debugging, data analysis, and more), 6 agent role prompts, 5 prompt templates, and orchestration harness docs. Skills and agents load natively in Claude Code.",
+  "author": {
+    "name": "Tapiwa Makandigona",
+    "url": "https://github.com/tapiwamakandigona"
+  },
+  "repository": "https://github.com/tapiwamakandigona/subagent-toolkit",
+  "homepage": "https://github.com/tapiwamakandigona/subagent-toolkit#readme",
+  "license": "MIT",
+  "keywords": ["subagents", "skills", "orchestration", "prompts", "agents"],
+  "skills": "./skills/",
+  "agents": "./agents/"
+}

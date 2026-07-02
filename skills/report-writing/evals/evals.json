@@ -1,0 +1,93 @@
+{
+  "skill": "report-writing",
+  "cases": [
+    {
+      "id": "tldr-first",
+      "prompt": "Structure a report answering 'should we migrate to database X?' — what comes first and what must it contain?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)TL;?DR|summary first|bullets? first|lead with"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)answer|recommendation|decision"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)without reading|standalone|act on"
+        }
+      ]
+    },
+    {
+      "id": "evidence-inline",
+      "prompt": "Rewrite this report sentence properly: 'Performance improved significantly after the change.'",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "\\d"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)ms|%|second|latency|baseline|from.{0,30}to"
+        }
+      ]
+    },
+    {
+      "id": "headings-carry-content",
+      "prompt": "Critique these section headings from a findings report: 'Analysis', 'Results', 'Discussion'. Provide better ones for a report finding that costs drop 40% under Option B.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)finding|conclusion|content|state.{0,40}(the|what)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)40\\s?%|option b"
+        }
+      ]
+    },
+    {
+      "id": "table-vs-prose",
+      "prompt": "You're comparing 4 vendor options across price, support, and integration effort. Table or prose? And what must accompany your choice?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)table"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)takeaway|one sentence|states? what|conclusion"
+        }
+      ]
+    },
+    {
+      "id": "no-process-narration",
+      "prompt": "A draft report opens with: 'First I searched for benchmarks, then I found three articles, then I compared them…'. What's wrong and where does this content belong?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)process|narrat|scaffold"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)appendix|method"
+        }
+      ]
+    },
+    {
+      "id": "length-discipline",
+      "prompt": "Your status update draft is 1,200 words. The skill's default ceiling for status documents is what, and what do you cut first?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)one page|~?400 words|400"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)process narration|restated context|adjectives|hedg"
+        }
+      ]
+    }
+  ]
+}

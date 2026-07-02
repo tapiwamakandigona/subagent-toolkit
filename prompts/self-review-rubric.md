@@ -45,6 +45,28 @@ Definition of done (from the brief): {{criteria}}
 Verdict: SHIP / FIX-FIRST (list the fixes, then re-run items they touch)
 ```
 
+### Example (filled)
+
+```text
+Self-review of: onboarding-email sequence (3 emails) in content/onboarding/
+Definition of done (from brief): 3 emails ≤150 words each, one CTA per email,
+matches voice guide, no placeholder text.
+
+1. COMPLETENESS: 3 emails present (01-welcome.md, 02-setup.md, 03-upgrade.md) — met.
+   Word counts 128/141/119 (wc -w) — met. Implied but unstated: subject lines; added.
+2. CORRECTNESS: ran scripts/lint_links.py — 6/6 links resolve. Most-likely-wrong
+   claim: "setup takes 2 minutes" in 02 — re-timed against docs walkthrough: 4 min.
+   Changed to "a few minutes".
+3. SCOPE: only content/onboarding/ touched. Added a 4th "win-back" draft unprompted —
+   removed; noted as suggestion in report instead.
+4. CONSUMER TEST: cold-read as a new user. Question raised: "where do I find my API
+   key?" — 02 now links the settings page.
+5. HYGIENE: no leftover {{placeholders}} (grep clean); no tokens.
+6. HONEST CAVEATS: voice-guide match is my judgment, not verified by the brand owner.
+
+Verdict: SHIP
+```
+
 ## Anti-patterns
 
 - **Rubber-stamping** — filling the rubric with unevidenced yeses defeats its purpose entirely.

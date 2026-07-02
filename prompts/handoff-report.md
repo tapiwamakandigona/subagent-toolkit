@@ -5,9 +5,10 @@ The standard shape for a subagent's final report to its orchestrator. A uniform 
 ## Usage notes
 
 - The report is for a reader with **no access to your working memory** — only paths, commands, and artifacts survive the handoff. Anything not written here is lost.
+- **Composing with a role:** if you were assigned a role from `../agents/`, its "Report format" is the *content* of Section 1 (RESULT); this template is the envelope around it. On any other conflict, precedence is: orchestrator objective > role file > prompt templates > skills.
 - Cite paths; don't paste large content. The orchestrator can open files.
 - Section 5 (Caveats) is the most valuable section and the most often skipped. An empty caveats section from a nontrivial task is a red flag, not a good sign.
-- Keep it under ~400 words for routine tasks; scale up only with genuine complexity.
+- Keep it under ~400 words for routine tasks; scale up only with genuine complexity. Role formats that mandate tables or per-finding detail (reviewer, researcher) legitimately run longer — keep the envelope lean and let RESULT carry the role's detail.
 
 ## Template
 
@@ -38,6 +39,36 @@ STATUS: {{complete | partial | blocked}}
 
 6. SUGGESTED NEXT STEPS (optional)
    {{only if a concrete cheap step would materially help; not a wish list}}
+```
+
+### Example (filled)
+
+```text
+TASK: Fix the CSV export dropping rows with embedded newlines (#412)
+STATUS: complete
+
+1. RESULT
+   Export now quotes multiline fields correctly; all 3 reported samples round-trip.
+   Artifacts: src/export/csv_writer.py, tests/test_csv_writer.py
+
+2. WHAT I DID
+   - Root-caused to a hand-rolled line splitter; replaced with stdlib csv.writer
+   - Kept the existing delimiter config; no API change
+   - Judgment call: left the legacy TSV path untouched (separate code path, not in brief)
+
+3. VERIFICATION
+   VERIFIED: pytest tests/test_csv_writer.py — 14 passed (3 new regression tests)
+   ASSUMED: Excel import behavior (no Excel here; round-tripped via python csv reader)
+
+4. SCOPE NOTES
+   Paths touched: src/export/csv_writer.py, tests/test_csv_writer.py (both owned)
+   Not done: TSV path has the same bug (out of scope — flagged below)
+
+5. CAVEATS & RISKS
+   TSV export (src/export/tsv_writer.py) shares the buggy splitter; will bite next.
+
+6. SUGGESTED NEXT STEPS
+   One-line fix + test in tsv_writer.py; ~30 min for whoever owns it.
 ```
 
 ## Anti-patterns

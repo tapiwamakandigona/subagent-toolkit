@@ -1,6 +1,9 @@
 ---
 name: deep-research
 description: Methodology for multi-source research tasks. Covers decomposing a question into sub-queries, triangulating across independent sources, scoring source credibility, maintaining citation discipline, deciding when to stop searching, and structuring the final research report. Use when a task requires gathering, verifying, and synthesizing information from the web or documents rather than answering from prior knowledge.
+license: MIT
+metadata:
+  version: "1.1.0"
 ---
 
 # Deep Research

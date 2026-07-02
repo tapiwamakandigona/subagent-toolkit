@@ -39,3 +39,7 @@ node_modules/
 *.log
 tmp/
 temp/
+
+# Tool caches and test artifacts
+.fetch_cache/
+.pytest_cache/

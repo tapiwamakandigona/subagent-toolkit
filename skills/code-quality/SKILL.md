@@ -1,6 +1,9 @@
 ---
 name: code-quality
 description: Practices for writing and reviewing code as an autonomous agent. Covers making the smallest useful change, reading code before writing it, targeted testing, defensive refactoring, and commit hygiene. Use whenever modifying an existing codebase, writing new code that others will maintain, or reviewing code changes.
+license: MIT
+metadata:
+  version: "1.1.0"
 ---
 
 # Code Quality for Agents
@@ -29,6 +32,7 @@ Before changing anything, spend real effort understanding the local territory:
 - Test the behavior you changed plus the nearest edge cases (empty, null, boundary, error path) — not an exhaustive suite for code you didn't touch.
 - Run the *existing* test suite (or the relevant subset) after your change. Your job includes not breaking what worked.
 - If the project has no test infrastructure, verify by executing the changed path manually and record exactly what you ran and observed.
+- **Run the repo's configured linters/formatters/type-checkers** (look for configs: `.eslintrc`, `ruff.toml`, `pyproject.toml`, `mypy.ini`, `.pre-commit-config.yaml`, CI workflows) before submitting — cheap, high-signal, and a common agent omission.
 - Never weaken an assertion or delete a failing test to get green. A failing test is a message; read it.
 
 ## 4. Defensive refactoring

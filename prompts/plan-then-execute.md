@@ -37,6 +37,32 @@ PHASE 2 — EXECUTE
   the final plan with per-step outcomes (done / amended / skipped-because).
 ```
 
+### Example (filled)
+
+Phase 1 output only — Phase 2 is execution, not prose:
+
+```text
+Task: Migrate the blog from SQLite to Postgres without losing posts or downtime >5 min.
+
+Goal restated: all 1,240 posts and comments served from Postgres; done = row counts
+match, spot-checked pages render identically, old DB kept as rollback.
+Inspected first: schema.sql, db.py (raw SQL, 3 SQLite-specific pragmas), backup cron.
+
+PLAN:
+1. Dump SQLite schema+data; verify dump row counts match live DB.        [REVERSIBLE]
+2. Write Postgres schema; translate the 3 pragma-dependent queries.      [REVERSIBLE]
+3. Load dump into staging Postgres; row-count + checksum comparison.     [REVERSIBLE]
+4. Point staging app at Postgres; render 10 sampled pages, diff HTML.    [REVERSIBLE]
+5. Maintenance window: final incremental dump, load, switch DSN.         [IRREVERSIBLE]
+6. Smoke-check prod (home, 3 posts, comment submit); keep SQLite file.   [REVERSIBLE]
+
+Risks: (1) type coercion on dates → checksum step catches; (2) comment writes during
+window → app in read-only mode first; (3) DSN typo → step 5 precondition re-check.
+Fallback at halfway: staging fully migrated + runbook, prod untouched.
+
+Checkpoint: wait for approval.
+```
+
 ## Anti-patterns
 
 - **Plan theater** — writing a plan, then executing something else without amendments.

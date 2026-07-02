@@ -1,0 +1,93 @@
+{
+  "skill": "planning-and-decomposition",
+  "cases": [
+    {
+      "id": "definition-of-done",
+      "prompt": "You receive a fuzzy task: 'improve the onboarding flow.' What's the first thing you write down before planning?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)done when|definition of done"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)verif"
+        }
+      ]
+    },
+    {
+      "id": "verifiable-steps",
+      "prompt": "Critique this plan step: '3. Understand the authentication system.' Rewrite it properly.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)observable|verifiable|artifact|output"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)(write|produce|create).{0,80}(summary|note|file|doc)"
+        }
+      ]
+    },
+    {
+      "id": "front-load-risk",
+      "prompt": "Your plan has 6 steps; step 5 depends on an external API you've never confirmed exists. What's wrong with this ordering?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)risk.{0,120}(first|early|front)|(first|early).{0,120}risk|invalidate.{0,120}(whole|approach|plan)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)(move|check|verify|confirm).{0,80}(api|earlier|first|up front)"
+        }
+      ]
+    },
+    {
+      "id": "replanning-trigger",
+      "prompt": "You've failed the same step twice with two different approaches. What does the skill say to do before a third attempt?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)replan|change strategy|escalat|different approach"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)(third|3rd).{0,120}(never|rarely|not|almost never)|(not|don'?t).{0,80}(same|identical|again)"
+        }
+      ]
+    },
+    {
+      "id": "living-checklist",
+      "prompt": "How should the plan be maintained during execution of a long task?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)checklist|todo"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)update.{0,80}(as you go|live|continuously|as work)|living"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)one.{0,40}current|current step"
+        }
+      ]
+    },
+    {
+      "id": "irreversible-last",
+      "prompt": "Your plan includes 'delete the old database tables' and 'send the announcement email' among other steps. How do you place and treat these steps?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)irreversible|external|cannot (be )?undo"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)last|end|after.{0,60}(verif|check)|pre-?check"
+        }
+      ]
+    }
+  ]
+}

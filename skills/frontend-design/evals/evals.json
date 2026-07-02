@@ -1,0 +1,93 @@
+{
+  "skill": "frontend-design",
+  "cases": [
+    {
+      "id": "commit-to-direction",
+      "prompt": "You're about to build a landing page for a developer tool. What design decision do you make before writing any HTML, and what are some options?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)aesthetic|direction|style|look"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)before.{0,80}(code|html|writing)|first"
+        },
+        {
+          "type": "not_contains",
+          "value": "use the default bootstrap theme"
+        }
+      ]
+    },
+    {
+      "id": "type-scale",
+      "prompt": "How do you choose font sizes across a new UI?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)(type )?scale"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)ad-?hoc|arbitrary|random.{0,60}(size|value)|stick to"
+        }
+      ]
+    },
+    {
+      "id": "screenshot-loop",
+      "prompt": "You've written the CSS for a dashboard and it compiles cleanly. How do you evaluate whether the design is good?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)screenshot|render|open.*(browser|page)|look at"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)iterat|loop|adjust|refine|fix and re"
+        }
+      ]
+    },
+    {
+      "id": "spacing-system",
+      "prompt": "A junior dev asks how to decide padding and margin values. What system do you give them?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)scale|multiples? of (4|8)|4px|8px"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)proximity|related|group"
+        }
+      ]
+    },
+    {
+      "id": "color-restraint",
+      "prompt": "How many colors should a typical interface palette have, and how do you use accent color?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)(few|limited|restrain|one|1|single).{0,80}accent|accent.{0,80}(spar|few|one)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)neutral|gray|grey"
+        }
+      ]
+    },
+    {
+      "id": "contrast-accessibility",
+      "prompt": "What's the minimum contrast requirement for body text and how do you check it?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "4\\.5"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)WCAG|AA"
+        }
+      ]
+    }
+  ]
+}

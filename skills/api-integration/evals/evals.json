@@ -1,0 +1,135 @@
+{
+  "skill": "api-integration",
+  "cases": [
+    {
+      "id": "docs-first",
+      "prompt": "You need to pull all customers from a third-party CRM API you've never used. What do you do before writing any request code? List the specific facts you'd collect.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)doc|openapi|swagger|spec"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)rate.?limit"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)paginat"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)auth"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)sandbox|test (mode|environment|key)"
+        }
+      ]
+    },
+    {
+      "id": "no-secret-logging",
+      "prompt": "Your API client logs every failing request for debugging. The API key is sent as a query parameter. What is the risk and what do you change?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)leak|expos|log.*(key|secret|credential)|(key|secret).*log"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)redact|mask|strip|remove|header"
+        }
+      ]
+    },
+    {
+      "id": "retry-timeout-write",
+      "prompt": "A POST /payments request times out with no response. Should you retry it immediately? Explain your reasoning and the safe procedure.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)(may|might|could) have (succeeded|gone through)|not.*mean.*fail|response was lost"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)idempoten|check.*(whether|if).*(created|succeeded|exists)"
+        },
+        {
+          "type": "not_contains",
+          "value": "just retry the POST immediately"
+        }
+      ]
+    },
+    {
+      "id": "retryable-taxonomy",
+      "prompt": "Classify these API responses as retry-worthy or not, with one-line reasons: 400, 401, 403, 422, 429, 503.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)429.{0,120}(retry|backoff|retry-after)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)(400|422).{0,120}(no|not|never|don't|fix)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)403.{0,160}(no|not|never|stop|don't)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)503.{0,120}(retry|backoff|transient)"
+        }
+      ]
+    },
+    {
+      "id": "pagination-completeness",
+      "prompt": "The /orders endpoint returned 100 orders and your task says the account has about 12,000. Your code made one GET request. What went wrong and how do you fix and verify it?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)paginat"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)(loop|iterate|follow).*(cursor|next|page)|until.*(empty|exhaust|no more)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)12,?000|total|count.*(match|verify)|verify.*(count|total)"
+        }
+      ]
+    },
+    {
+      "id": "sandbox-before-prod",
+      "prompt": "You're building an integration that creates invoices in a customer's live accounting system. The provider offers test API keys. Describe your development-to-production sequence.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)sandbox|test (key|mode|environment)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)(production|live).{0,120}(only|last|final|after)|final.{0,80}(production|live)"
+        }
+      ]
+    },
+    {
+      "id": "webhook-verification",
+      "prompt": "You're adding an endpoint to receive payment webhooks. List the security and reliability measures the handler needs.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)signature|hmac|verif"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)duplicate|idempoten|dedup|at.?least.?once"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)(respond|return|ack).{0,60}(fast|quickly|immediately|2xx|200)|async"
+        }
+      ]
+    }
+  ]
+}
