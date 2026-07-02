@@ -1,0 +1,21 @@
+{
+  "name": "subagent-toolkit",
+  "owner": {
+    "name": "Tapiwa Makandigona"
+  },
+  "description": "Marketplace for the subagent-toolkit ability pack: skills, agent roles, and prompt templates for orchestrated subagent work.",
+  "version": "1.1.0",
+  "plugins": [
+    {
+      "name": "subagent-toolkit",
+      "source": "./",
+      "description": "An ability pack for orchestrated subagents: 13 skills, 6 agent role prompts, 5 prompt templates, and orchestration harness docs.",
+      "version": "1.1.0",
+      "license": "MIT",
+      "category": "workflows",
+      "tags": ["subagents", "skills", "orchestration", "prompts", "agents"],
+      "skills": "./skills/",
+      "agents": "./agents/"
+    }
+  ]
+}

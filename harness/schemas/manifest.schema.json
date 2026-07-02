@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/tapiwamakandigona/subagent-toolkit/main/harness/schemas/manifest.schema.json",
+  "title": "subagent-toolkit manifest",
+  "description": "Output of `python3 harness/scripts/manifest.py <root>`. Deliberately tolerant (additionalProperties: true) so new emitted fields can be added without breaking consumers.",
+  "type": "object",
+  "required": ["toolkit", "root", "skills", "agents", "prompts"],
+  "additionalProperties": true,
+  "properties": {
+    "toolkit": {
+      "type": "string",
+      "const": "subagent-toolkit"
+    },
+    "root": {
+      "type": "string",
+      "description": "Absolute path of the toolkit checkout that was scanned."
+    },
+    "skills": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/skill" }
+    },
+    "agents": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/agent" }
+    },
+    "prompts": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/prompt" }
+    },
+    "warnings": {
+      "type": "array",
+      "description": "Lint warnings. Present only when at least one item has missing or invalid frontmatter. `manifest.py --check` exits non-zero when this is non-empty.",
+      "items": { "type": "string" }
+    },
+    "info": {
+      "type": "array",
+      "description": "Softer lint notes (e.g. missing optional frontmatter keys). Present only when non-empty; never fails `--check`.",
+      "items": { "type": "string" }
+    }
+  },
+  "definitions": {
+    "skill": {
+      "type": "object",
+      "required": ["name", "description", "path"],
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "maxLength": 64
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "path": {
+          "type": "string",
+          "description": "Path to SKILL.md, relative to root."
+        },
+        "resources": {
+          "type": "array",
+          "description": "Bundled reference/script files, relative to root.",
+          "items": { "type": "string" }
+        },
+        "version": {
+          "type": "string",
+          "description": "The skill's frontmatter metadata.version, flattened. Present only when the skill declares one."
+        }
+      }
+    },
+    "agent": {
+      "type": "object",
+      "required": ["name", "description", "path"],
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "path": {
+          "type": "string",
+          "description": "Path to the role file, relative to root."
+        },
+        "recommended_capability_profile": {
+          "type": "string",
+          "description": "One of: coordinator | readonly | sandbox | external (free text tolerated for older checkouts)."
+        },
+        "recommended_model": { "type": "string" }
+      }
+    },
+    "prompt": {
+      "type": "object",
+      "required": ["name", "description", "path"],
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "path": {
+          "type": "string",
+          "description": "Path to the template, relative to root."
+        }
+      }
+    }
+  }
+}

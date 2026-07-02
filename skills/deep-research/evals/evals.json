@@ -1,0 +1,93 @@
+{
+  "skill": "deep-research",
+  "cases": [
+    {
+      "id": "decompose-question",
+      "prompt": "Research task: 'Is company X a good acquisition target?' What do you do before running any searches?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)sub-?quest|decompos|break.*(down|into)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)financ|market|legal|risk|competitor|product"
+        }
+      ]
+    },
+    {
+      "id": "triangulate",
+      "prompt": "One blog post claims a market is worth $4.2B. Can you use this number in your report? Describe your process.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)independent|second source|corroborat|triangulat|cross-?(check|reference)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)primary|original source|where.*(number|figure).*(from|originat)"
+        }
+      ]
+    },
+    {
+      "id": "credibility-scoring",
+      "prompt": "You have three sources for the same claim: a vendor's marketing page, a peer-reviewed paper, and a Reddit thread. How do you weigh them?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)peer-?review.{0,200}(most|highest|strongest|top)|(most|highest).{0,120}peer"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)vendor.{0,200}(bias|interest|self-?serv|marketing|discount)|conflict of interest"
+        }
+      ]
+    },
+    {
+      "id": "citation-discipline",
+      "prompt": "How do you record findings during a multi-hour research task so the final report's claims are verifiable?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)cite|citation|source|URL|link"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)(as you go|inline|with each|per claim|alongside)|every (claim|finding)"
+        }
+      ]
+    },
+    {
+      "id": "stopping-criteria",
+      "prompt": "You've been researching for a while and the last several sources repeat what you already know. What does this signal and what do you do?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)saturat|diminishing|stop|conclude|enough"
+        },
+        {
+          "type": "not_contains",
+          "value": "keep searching indefinitely"
+        }
+      ]
+    },
+    {
+      "id": "absence-of-evidence",
+      "prompt": "After thorough searching you cannot find any credible source for a claim your stakeholder believes is true. What goes in the report?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)(no|not|couldn'?t|could not|unable).{0,80}(find|locate|source|evidence)|absence"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)report|state|disclose|explicit"
+        },
+        {
+          "type": "not_contains",
+          "value": "assume it is true anyway"
+        }
+      ]
+    }
+  ]
+}

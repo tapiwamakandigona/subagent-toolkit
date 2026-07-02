@@ -1,6 +1,9 @@
 ---
 name: prompt-engineering
 description: Techniques for writing prompts that delegate work to other models or subagents. Covers packing the right context into a delegation brief, specifying output schemas, selecting few-shot examples, layering instruction hierarchies, and checking for prompt degradation. Use when spawning subagents, calling an LLM as a tool inside a pipeline, or writing reusable prompt templates.
+license: MIT
+metadata:
+  version: "1.1.0"
 ---
 
 # Prompt Engineering for Delegation
@@ -17,7 +20,7 @@ Every delegated task needs five blocks (template in [references/delegation-brief
 4. **Output contract** — exact format expected (see §2).
 5. **Quality bar & examples** — what distinguishes acceptable from excellent, ideally shown not described.
 
-Ordering matters: put long reference material (documents, code) **at the top**, instructions and the output contract **at the bottom** — models weight the end of the prompt heavily, and instructions buried mid-document get dropped.
+Ordering matters: put long reference material (documents, code) **at the top**, instructions and the output contract **at the bottom** — models weight the end of the prompt heavily, and instructions buried mid-document get dropped. This ordering also makes the stable prefix prompt-cache-friendly: on repeated delegations, keep the shared reference material byte-identical at the top and vary only the tail, so cached prefixes hit and cost drops.
 
 Include an escape hatch: *"If you cannot complete this or the task is ambiguous, say so explicitly and explain why — do not guess."* Without it, delegates fabricate rather than admit blockage.
 

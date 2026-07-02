@@ -1,0 +1,111 @@
+{
+  "skill": "debugging",
+  "cases": [
+    {
+      "id": "reproduce-first",
+      "prompt": "A user reports 'the export sometimes produces an empty file.' What is your very first step, before reading any code?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)reproduc"
+        },
+        {
+          "type": "not_contains",
+          "value": "start by reading the code"
+        }
+      ]
+    },
+    {
+      "id": "read-full-trace",
+      "prompt": "A Python service log shows a long stack trace ending in 'AttributeError: NoneType object has no attribute id', preceded by several other errors. How do you read this log before forming a theory?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)(entire|whole|full|complete).*(trace|error|message|log)|trace.*(bottom|top to bottom|in full)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)caused by|first error|earlier error|upstream|origin"
+        }
+      ]
+    },
+    {
+      "id": "bisect-commits",
+      "prompt": "A regression appeared sometime in the last 200 commits; the test suite can detect it in 30 seconds. What is the most efficient way to find the offending commit, and roughly how many test runs will it take?",
+      "checks": [
+        {
+          "type": "contains",
+          "value": "bisect"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)\\b(7|8|around 8|~8|eight|log)\\b"
+        }
+      ]
+    },
+    {
+      "id": "instrument-not-guess",
+      "prompt": "You've read the suspect function for 15 minutes and still can't see the bug. The function transforms a list of records. What do you do next?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)log|print|assert|instrument"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)actual value|real value|what.*actually|inspect the (data|values)"
+        }
+      ]
+    },
+    {
+      "id": "one-hypothesis",
+      "prompt": "You have three ideas about what's causing a flaky test: a race condition, a stale cache, and a timezone bug. Describe your process for investigating.",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)one (hypothesis|change|thing|idea) at a time|one at a time|single (hypothesis|change)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)falsifiab|experiment|test (each|the) hypothes|rule out"
+        }
+      ]
+    },
+    {
+      "id": "stale-build-check",
+      "prompt": "You've edited the code four times but the error message never changes at all — it's as if your edits do nothing. What should you suspect and how do you check?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)stale|cached|old (build|version|deploy)|not (running|executing) (the|your)|wrong (code|version|file)"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)marker|print|version string|confirm|verify.*(running|executing)"
+        }
+      ]
+    },
+    {
+      "id": "stop-and-report",
+      "prompt": "You've spent triple your estimate on a bug, killed three hypotheses, and the remaining lead requires production database access you don't have. What do you do, and what does your write-up contain?",
+      "checks": [
+        {
+          "type": "regex",
+          "value": "(?i)stop|escalat|report|hand.?off"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)reproduc"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)ruled out|eliminated|dead|killed|falsified"
+        },
+        {
+          "type": "regex",
+          "value": "(?i)next (experiment|step|test)|remaining hypothes"
+        }
+      ]
+    }
+  ]
+}

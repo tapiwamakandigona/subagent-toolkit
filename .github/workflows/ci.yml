@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    name: Lint & test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: shellcheck shell scripts
+        run: shellcheck bootstrap.sh tests/smoke_bootstrap.sh
+
+      - name: Install Python tooling
+        run: pip install ruff pytest
+
+      - name: ruff (syntax errors and pyflakes rules only)
+        run: ruff check --select E9,F --no-cache harness/scripts/ skills/ tests/
+
+      - name: pytest
+        run: python3 -m pytest tests/ -q
+
+      - name: manifest lint (strict)
+        run: python3 harness/scripts/manifest.py --check .
+
+      - name: validate skill evals
+        run: python3 harness/scripts/run_evals.py --validate
+
+      - name: check for leftover placeholders (skills, agents, harness)
+        run: python3 harness/scripts/check_placeholders.py skills agents harness
+
+      - name: bootstrap smoke test (sh)
+        run: sh tests/smoke_bootstrap.sh
+
+  smoke-dash:
+    name: Bootstrap smoke test under dash
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dash
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq dash
+
+      - name: bootstrap smoke test (dash)
+        run: dash tests/smoke_bootstrap.sh
