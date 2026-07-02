@@ -13,9 +13,9 @@ The default backbone. Everything else is a variation.
 **When:** any task worth delegating at all.
 
 **How:**
-1. **Plan** — orchestrator decomposes the goal into tasks with written definitions of done (use `prompts/plan-then-execute.md` on yourself).
-2. **Delegate** — one brief per task (`prompts/task-briefing.md`), each naming a role from `agents/` and a report format (`prompts/handoff-report.md`).
-3. **Verify** — orchestrator independently checks each result against the *brief*, not the report (`prompts/verification-loop.md`), then integrates.
+1. **Plan** — orchestrator decomposes the goal into tasks with written definitions of done (use `../prompts/plan-then-execute.md` on yourself).
+2. **Delegate** — one brief per task (`../prompts/task-briefing.md`), each naming a role from `../agents/` and a report format (`../prompts/handoff-report.md`).
+3. **Verify** — orchestrator independently checks each result against the *brief*, not the report (`../prompts/verification-loop.md`), then integrates.
 
 **Failure modes:**
 - *Trusting reports.* Subagents report success optimistically. Verification against artifacts is not optional.
@@ -38,6 +38,7 @@ The default backbone. Everything else is a variation.
 - *Ownership overlap.* Two agents editing one file is a planning bug; last-writer-wins destroys work silently. There is no acceptable merge strategy — fix the partition.
 - *Hidden coupling.* Tasks that look independent but share an interface (naming scheme, data format). Pin the interface in every brief ("skill folders are named lowercase-hyphens; frontmatter keys are exactly `name`, `description`").
 - *Fan-out for its own sake.* Two coupled tasks run in parallel produce two half-answers plus a reconciliation task. When in doubt, pipeline.
+- *Actions carry implicit decisions.* Every edit or output embeds choices (naming, structure, interpretation) the brief didn't specify. Parallel writers each decide differently, and the conflicts surface only at integration. This is why fan-out suits read-heavy work and betrays write-heavy work — see "When NOT to multi-agent" below.
 - *Uneven task sizes.* One 3-hour task among five 10-minute tasks means you wait 3 hours anyway. Split the big one or start it first.
 
 ---
@@ -63,8 +64,8 @@ The default backbone. Everything else is a variation.
 **When:** quality matters more than latency, and defects are cheaper to catch than to ship: user-facing deliverables, risky code changes, published documents.
 
 **How:**
-1. Producer agent builds the artifact (any role in `agents/`).
-2. A **separate** reviewer agent (`agents/reviewer.md`) reviews against the original brief and returns APPROVE / APPROVE-WITH-FIXES / REJECT with located findings.
+1. Producer agent builds the artifact (any role in `../agents/`).
+2. A **separate** reviewer agent (`../agents/reviewer.md`) reviews against the original brief and returns APPROVE / APPROVE-WITH-FIXES / REJECT with located findings.
 3. On non-approval, producer addresses findings (with the review in its brief) and resubmits.
 4. Cap at 2–3 rounds. Non-convergence means the brief is wrong or the approach is — escalate, don't loop.
 
@@ -73,6 +74,30 @@ The default backbone. Everything else is a variation.
 - *Reviewer without the brief.* A reviewer judging only the artifact will polish a solution to the wrong problem. The reviewer gets the original requirements, always.
 - *Nit loops.* Rounds spent on [Nit]-severity findings. Only [Blocking] findings force a new round.
 - *Producer relitigating.* The producer's job on REJECT is to fix or escalate — not to argue with the reviewer inside the loop.
+
+---
+
+## 5. Failure & recovery
+
+**When:** always — every pattern above assumes subagents return usable reports, and eventually one won't.
+
+**How — classify the failure first; the class picks the response:**
+
+| Class | Symptom | Response |
+|---|---|---|
+| **Stalled** | no report within the timebox | kill it; retry once with a tighter scope and an explicit budget |
+| **Failed** | report says the approach didn't work | retry once with a *sharpened* brief that cites the failure verbatim and rules out the dead end |
+| **Blocked** | report says a dependency/permission/path is missing | fix the blocker yourself (it's usually a briefing bug), then re-run; don't re-brief the same hole |
+| **Malformed** | empty, truncated, or off-format report but artifacts may exist | inspect the artifacts directly; if usable, salvage and note it; if not, treat as Failed |
+
+1. **One retry, maximum.** The retry brief is a rework round (see the variant in `../prompts/task-briefing.md`): it names what failed, quotes the failing check or finding, and narrows the definition of done. A retry with the same brief is a coin flip, not a plan.
+2. **After the failed retry, change the plan, not the brief:** reassign to a different role/model, descope the task and note it, or escalate to your own requester. Say which you chose and why.
+3. **Kill criteria — decide them at planning time, not mid-crisis:** total budget (time/tokens) for the run, max retries per task (one), and max fraction of tasks failing before you stop spawning and replan (a third of a fan-out failing means the partition is wrong).
+
+**Failure modes:**
+- *Retry loops.* Retrying more than once without changing the plan burns budget on hope. Two failures is evidence about the plan.
+- *Silent descoping.* Dropping a failed task without a note in the final answer turns a known gap into a hidden one.
+- *Salvage neglect.* A malformed report often sits on top of perfectly good artifacts. Check the disk before re-running the work.
 
 ---
 
@@ -87,3 +112,30 @@ The default backbone. Everything else is a variation.
 | Independent tasks *then* synthesis | Fan-out → pipeline into `report-writer` |
 
 Patterns compose: a pipeline stage can itself fan out; a critic loop can gate a pipeline's final stage. Compose deliberately and write the composition down in your plan — if you can't draw the flow in five boxes, simplify it.
+
+### When NOT to multi-agent
+
+Default to a single agent; multi-agent is the exception you justify.
+
+- **Single-threaded first.** If one focused agent can finish inside its context window and your deadline, delegation only adds briefing overhead, integration work, and new failure modes.
+- **Parallelize read-heavy, serialize write-heavy.** Research, review, and data-gathering fan out well — reads don't conflict. Coding, design, and anything where outputs must fit together serialize better, because actions carry implicit decisions (pattern 2) and parallel writers make them differently.
+- **Coupled tasks are one task.** If two tasks share an interface you can't pin verbatim in both briefs, they aren't independent — pipeline them or merge them.
+
+### Budgets & effort scaling
+
+Agents overspend when effort isn't stated. Put explicit numbers in every brief (the BUDGET line in `../prompts/task-briefing.md`) and scale them to the task:
+
+- **Simple fact-find:** 1 agent, ~3–10 tool calls. No fan-out.
+- **Comparison / multi-source question:** 2–4 subagents, ~10–15 calls each.
+- **Genuinely wide work** (many independent shards, large research sweeps): 10+ subagents — rare, and only when the partition is truly disjoint.
+- **Cost reality:** a multi-agent run commonly burns ~15× the tokens of a single-agent chat. The value of the result has to carry that.
+- **Stop criteria:** every budget names what happens at exhaustion — report partial results and stop. An agent that "pushes on to finish" past budget is defecting, not being diligent.
+
+### Tracing: file-based run logs
+
+Multi-agent failures are undebuggable without a trace. The no-infra convention:
+
+- The orchestrator assigns a **run ID** at planning time and puts it in every brief (the RUN_ID line in `../prompts/task-briefing.md`).
+- Each subagent **appends** to `runs/<run-id>/` — its report, key intermediate artifacts, and (on failure) whatever it had.
+- The orchestrator keeps `runs/<run-id>/decisions.md`: one line per delegation, verification outcome, retry, and descope, as they happen.
+- Reports cite the trace path, so any later agent (or human) can reconstruct the run from disk alone.
