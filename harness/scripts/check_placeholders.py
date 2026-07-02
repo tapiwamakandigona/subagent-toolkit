@@ -21,7 +21,9 @@ from pathlib import Path
 
 PLACEHOLDER_RE = re.compile(r"\{\{[^{}\n]*\}\}")
 INLINE_CODE_RE = re.compile(r"`[^`\n]*`")
-TEXT_SUFFIXES = {".md", ".txt", ".sh", ".py", ".json", ".yaml", ".yml"}
+# .py deliberately excluded: scripts legitimately embed {{placeholder}}
+# tokens in docstrings and template strings (e.g. run_evals.py).
+TEXT_SUFFIXES = {".md", ".txt", ".sh", ".json", ".yaml", ".yml"}
 SKIP_DIRS = {".git", "__pycache__", ".pytest_cache", "node_modules", ".venv"}
 
 

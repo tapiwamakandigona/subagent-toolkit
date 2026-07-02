@@ -51,8 +51,10 @@ Unpinned, bootstrap tracks `main` and updates on every run — fine for explorat
 ```
 subagent-toolkit/
 ├── README.md            ← you are here
+├── CHANGELOG.md         ← release notes (Keep a Changelog format)
 ├── bootstrap.sh         ← installer + manifest + context primer
 ├── .claude-plugin/      ← Claude Code plugin/marketplace manifest
+├── .github/             ← CI workflow (lint, tests, smoke tests)
 ├── skills/              ← Agent Skills (Anthropic conventions): one folder per
 │   │                      skill, each with SKILL.md (frontmatter: name,
 │   │                      description), references/ for depth, scripts/ for
@@ -71,10 +73,14 @@ subagent-toolkit/
 │   ├── self-review-rubric.md
 │   ├── handoff-report.md
 │   └── verification-loop.md
-└── harness/             ← orchestration patterns and context discipline
-    ├── patterns.md
-    ├── context-management.md
-    └── scripts/manifest.py   ← JSON manifest of the whole pack (stdlib only)
+├── harness/             ← orchestration patterns and context discipline
+│   ├── patterns.md
+│   ├── context-management.md
+│   ├── schemas/         ← JSON Schema for manifest.py output
+│   └── scripts/         ← manifest.py (JSON manifest + lint), run_evals.py
+│                          (eval validation/runner), check_placeholders.py
+│                          (leftover {{placeholder}} check) — stdlib only
+└── tests/               ← pytest suite + bootstrap smoke test
 ```
 
 ## Using the toolkit
@@ -153,7 +159,7 @@ Replace `{{ROLE}}` with one of: `researcher`, `code-worker`, `reviewer`, `design
 - **Prompts:** match the existing shape — H1, one-paragraph description (the first prose line becomes the manifest description), Usage notes, Template with `{{placeholders}}`, a filled Example, Anti-patterns.
 - **Harness patterns:** state when to use it, how it works, and how it characteristically fails — a pattern without named failure modes isn't done.
 
-Run `python3 harness/scripts/manifest.py --check .` before opening a PR — strict mode fails on any warning. CI runs the same check plus shellcheck on `bootstrap.sh`, ruff and pytest on the Python, and the evals schema check.
+Run `python3 harness/scripts/manifest.py --check .` before opening a PR — strict mode fails on any warning. Also run `python3 harness/scripts/check_placeholders.py skills agents harness` to catch leftover `{{placeholder}}` tokens outside `prompts/`. CI runs both checks plus shellcheck on `bootstrap.sh`, ruff and pytest on the Python, and the evals schema check.
 
 ## License
 

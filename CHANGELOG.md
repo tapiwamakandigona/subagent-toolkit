@@ -57,7 +57,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   no longer crashes (and delays are capped); tiny pages no longer hard-fail
   after pointless retries; non-http(s) URL schemes (e.g. `file://`) are
   rejected; responses are decoded with the declared charset instead of
-  hardcoded UTF-8; binary content types are skipped.
+  hardcoded UTF-8; binary content types are skipped. robots.txt is now
+  checked before every fetch by default (skip with `--no-robots`), so
+  fetches disallowed by a site's robots.txt newly fail.
 - The two frontmatter parsers (`bootstrap.sh` awk vs `manifest.py` regex)
   now agree on CRLF files and files without a trailing newline.
 - `.fetch_cache/` added to `.gitignore`; placeholder User-Agent URL replaced
