@@ -4,9 +4,9 @@ Template for verifying a claimed result independently of how it was produced —
 
 ## Usage notes
 
-- Run this as the producer (before handoff), as an orchestrator (on a subagent's report), or as a dedicated reviewer agent. **If you are the reviewer (`../agents/reviewer.md`), never fix — always send back to the producer with the failing check.** The fix path below is for producers and orchestrators only.
+- Run this as the producer (before handoff, after `pre-submit-gate.md`), as an orchestrator (on a subagent's report), or as a dedicated reviewer agent. This loop is how evidence-of-done gets enforced: a VERIFIED verdict plus its check table is the proof artifact an orchestrator accepts; a report without one is ASSUMED, not done. **If you are the reviewer (`../agents/reviewer.md`), never fix — always send back to the producer with the failing check.** The fix path below is for producers and orchestrators only.
 - Derive checks from the **brief/requirements**, never from the artifact — the artifact may have quietly redefined the goal.
-- Cap the loop (`{{max_iterations}}`, usually 2–3). A loop that isn't converging means the approach is wrong; escalate instead of iterating forever.
+- Cap the loop (`{{max_iterations}}`, usually 2–3; aligned with the 3-cycle review cap in `../harness/patterns.md`). A loop that isn't converging means the approach is wrong; escalate instead of iterating forever.
 
 ## Template
 

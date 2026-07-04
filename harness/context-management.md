@@ -1,6 +1,6 @@
 # Context Management
 
-Context windows are the scarcest resource in multi-agent work. Tokens spent on stale transcripts, pasted file contents, and redundant background are tokens not spent reasoning about the task. This doc covers the three disciplines that keep agent context lean — progressive disclosure, parent-context hygiene, and the objective/reference split — plus two safeguards: untrusted content and long-horizon memory.
+Context windows are the scarcest resource in multi-agent work. Tokens spent on stale transcripts, pasted file contents, and redundant background are tokens not spent reasoning about the task. This doc covers the three disciplines that keep agent context lean — progressive disclosure, parent-context hygiene, and the objective/reference split — plus the safeguards that keep long runs alive: untrusted content, long-horizon memory, and the project state protocol.
 
 ---
 
@@ -82,3 +82,36 @@ Context windows end; multi-phase work doesn't. The bridge is **structured note-t
 - **Preserve:** decisions and their rationale, interface contracts (verbatim), open issues/bugs, artifact paths, and what's been verified. These are expensive or impossible to re-derive.
 - **Drop:** transcripts, tool outputs, and anything recomputable from the artifacts on disk.
 - **Resume-from-notes:** an agent picking up the work reads the notes file first, then opens artifacts on demand — it should never need the prior transcript. If resuming requires the transcript, the notes failed; fix the notes practice, not the resume.
+
+**Condensation recipe** — when working notes (or a long-running context) grow past useful size, rewrite them keeping:
+1. the **original task verbatim** — the one thing that must never be paraphrased away,
+2. **every decision with its reason**, and every interface contract verbatim,
+3. the **last K actions** in full (recent state is what the next step depends on),
+
+then summarize the middle and mark every elision explicitly ("~40 tool calls elided; outcomes logged in progress.md"). An unmarked gap reads as "nothing happened there" — the most expensive lie a notes file can tell.
+
+---
+
+## 6. Project state protocol
+
+For project-scale runs (multiple milestones, multiple sessions — see [`project-lifecycle.md`](project-lifecycle.md)), ad-hoc notes aren't enough. Keep a fixed file set at the project root; it is the project's memory, and no context window is.
+
+| File | Contents | Who writes |
+|---|---|---|
+| `PROJECT.md` | one-paragraph goal, pointers to the spec and architecture artifacts, standing decisions | orchestrator only |
+| `features.json` | array of `{id, title, acceptance, passes, evidence}` — the machine-readable definition of done | orchestrator creates; workers may **only** flip `passes` and fill `evidence` (a proof-artifact path), never edit `id`/`title`/`acceptance` |
+| `progress.md` | append-only log: one dated line per completed task, decision, or gate | anyone, append only — never rewrite history |
+| `init.sh` | brings the dev environment up from cold (install, migrate, run, test) | whoever changes the environment keeps it true |
+| `checkpoints/NN-<phase>.md` | phase-boundary snapshots: phase, decisions + reasons, artifact paths, open items, next step | orchestrator, at every phase gate |
+
+Why `features.json` is JSON and why workers can't edit acceptance criteria: structured files resist casual "helpful" rewriting, and an agent that can edit its own success criteria will eventually do so instead of meeting them. The reviewer diff-checks that acceptance criteria and tests weren't touched.
+
+**Session-start ritual (get up to speed):** every session on a project — first or fiftieth — starts the same way: read `PROJECT.md`, `features.json`, and the tail of `progress.md`; skim recent version-control history; run `init.sh` if the environment is cold. Only then act. Never resume from memory of a previous session — memory is what the state files replace.
+
+**Constant-context restart:** never continue an old thread into a new task. Each task starts a fresh context briefed from the state files, so task #50 starts as lean as task #5. Long threads accumulate rot; state files don't.
+
+**Orchestrator succession:** an orchestrator nearing context exhaustion doesn't push through — it writes a final checkpoint (current phase, in-flight delegations, pending verifications, next step) plus a successor brief pointing at the state files, then stops. The successor runs the session-start ritual and continues. A run should survive the death of any single context window, including the orchestrator's.
+
+---
+
+Two rules worth restating: state lives on disk, not in context windows — anything two sessions both need goes in a file; and constraints are the last thing you ever cut from a brief.
