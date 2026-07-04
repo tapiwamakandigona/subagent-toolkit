@@ -27,7 +27,7 @@ Each milestone from the spec runs the same inner cycle:
 1. **Build** — code-workers implement the milestone's tasks under path ownership or branch isolation (single-writer rule, `patterns.md` pattern 2). Each task carries its auto-verify command from the task list.
 2. **QA** — qa-engineer writes/extends tests as deliverables and verifies the increment end-to-end as a real user; logs defects, never fixes them. Defects go back to build as rework briefs; review/fix cycles cap at 3.
 3. **Integrate** — integrator merges branches serially in deliberate order, resolves conflicts in fresh context, regenerates generated/shared files.
-4. **Gate** — orchestrator checks `features.json`: every feature in the milestone has `passes: true` with an `evidence` path that actually exists (run `scripts/check_contract.py` on handoff sidecars; open the evidence). Records go/no-go in `checkpoints/NN-<milestone>.md`.
+4. **Gate** — orchestrator checks `features.json`: every feature in the milestone has `passes: true` with an `evidence` path that actually exists (run `harness/scripts/check_contract.py` from the installed pack on handoff sidecars; open the evidence). Records go/no-go in `checkpoints/NN-<milestone>.md`.
 
 **Evidence-of-done:** a completion claim without a proof artifact (test output, screenshot, E2E log) is rejected as-is — the work may be fine, but the claim isn't. VERIFIED means you ran the check; ASSUMED means you didn't; reports must say which.
 

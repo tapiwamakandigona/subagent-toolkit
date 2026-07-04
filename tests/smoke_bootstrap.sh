@@ -185,6 +185,50 @@ run_suite() { # $1=shell
   else
     fail "$shell: tampered-target error message missing (see $work/err7.txt)"
   fi
+
+  # --- 8. run-from-checkout + non-HEAD ABILITIES_REF: loud warning ----------
+  # The checkout the script runs from is never mutated, so a pin that does
+  # not match HEAD must be flagged loudly rather than silently ignored.
+  out8="$work/out8.txt"
+  if (cd "$work" && ABILITIES_NO_UPDATE=1 ABILITIES_REF=v0.0.0-nonexistent \
+        "$shell" "$REPO_ROOT/bootstrap.sh" >"$out8" 2>"$work/err8.txt"); then
+    pass "$shell: run-from-checkout with mismatched ref still exits 0"
+  else
+    fail "$shell: run-from-checkout with mismatched ref failed"
+  fi
+  if grep -q 'ABILITIES_REF=v0.0.0-nonexistent NOT applied' "$work/err8.txt"; then
+    pass "$shell: mismatched ref warning is logged"
+  else
+    fail "$shell: mismatched-ref warning missing (see $work/err8.txt)"
+  fi
+  check_output "$shell/self-dir-ref-warn" "$out8"
+
+  # --- 9. dirty worktree + NO_UPDATE + locally-resolvable ref: die offline --
+  # NO_UPDATE with a locally-resolvable ref must never fall through to a
+  # network fetch; a failed checkout (dirty tree) is a hard error instead.
+  dirty_target="$work/dirty target"
+  git clone --quiet "$REPO_ROOT" "$dirty_target" 2>/dev/null
+  (
+    cd "$dirty_target"
+    git config user.email smoke@example.invalid
+    git config user.name smoke
+    git tag v9.9.7-test
+    printf 'advance\n' >>README.md
+    git commit --quiet -am 'fixture: advance past tag'
+    printf 'uncommitted conflict\n' >>README.md
+  )
+  if (cd "$work" && ABILITIES_NO_UPDATE=1 ABILITIES_REF=v9.9.7-test \
+        "$shell" "$REPO_ROOT/bootstrap.sh" "$dirty_target" \
+        >"$work/out9.txt" 2>"$work/err9.txt"); then
+    fail "$shell: dirty-tree pin under NO_UPDATE was accepted (should die)"
+  else
+    pass "$shell: dirty-tree pin under NO_UPDATE dies instead of fetching"
+  fi
+  if grep -q 'resolves locally but checkout failed' "$work/err9.txt"; then
+    pass "$shell: dirty-tree error names the cause"
+  else
+    fail "$shell: dirty-tree error message missing (see $work/err9.txt)"
+  fi
 }
 
 run_suite sh

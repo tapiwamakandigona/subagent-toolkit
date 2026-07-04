@@ -3,7 +3,7 @@ name: self-verification
 description: The verify-before-submit loop for agent output. Covers rubric-based self-review, empirically testing your own claims, code, and numbers, render-and-inspect verification for visual artifacts, and a taxonomy of the most common agent failure modes to check against. Use before submitting any deliverable — code, reports, data, documents, or UI — especially when no human will review intermediate steps.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "2.0.0"
 ---
 
 # Self-Verification

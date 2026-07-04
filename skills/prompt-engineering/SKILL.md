@@ -3,7 +3,7 @@ name: prompt-engineering
 description: Techniques for writing prompts that delegate work to other models or subagents. Covers packing the right context into a delegation brief, specifying output schemas, selecting few-shot examples, layering instruction hierarchies, and checking for prompt degradation. Use when spawning subagents, calling an LLM as a tool inside a pipeline, or writing reusable prompt templates.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "2.0.0"
 ---
 
 # Prompt Engineering for Delegation

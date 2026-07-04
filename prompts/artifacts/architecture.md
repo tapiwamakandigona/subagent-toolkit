@@ -1,6 +1,6 @@
 # Artifact: Architecture
 
-The required skeleton for an architecture document — the output of the Architecture phase (usually `agents/architect.md`) and the design authority for every build phase after it. Its interface contracts get pinned verbatim into builder briefs; its module map is the orchestrator's ownership map.
+The required skeleton for an architecture document — the output of the Architecture phase (usually `../../agents/architect.md`) and the design authority for every build phase after it. Its interface contracts get pinned verbatim into builder briefs; its module map is the orchestrator's ownership map.
 
 ## Usage notes
 

@@ -1,0 +1,54 @@
+{
+  "skill": "repo-conventions-discovery",
+  "cases": [
+    {
+      "id": "agent-doc-first",
+      "prompt": "You are dropped into an unfamiliar repo with a task to 'add a settings page'. The root contains README.md, AGENTS.md, AI_CONTEXT.md, and plans.md. What is your very first action before editing anything, and in what order do you treat these files?",
+      "checks": [
+        { "type": "regex", "value": "(?i)read.{0,80}(AGENTS|AI_CONTEXT|agent doc)" },
+        { "type": "regex", "value": "(?i)(before|prior to).{0,40}(edit|any change|touching)|first" }
+      ]
+    },
+    {
+      "id": "agent-doc-outranks-readme",
+      "prompt": "A repo's README says libraries are loaded from a CDN, but its AI_CONTEXT.md says all libraries are vendored locally and the app must never load from a CDN. The two contradict. Which do you follow and why?",
+      "checks": [
+        { "type": "regex", "value": "(?i)AI_CONTEXT|agent doc|agent-facing" },
+        { "type": "regex", "value": "(?i)stale|outdated|outrank|authorit|maintained for (agents|assistants)" }
+      ]
+    },
+    {
+      "id": "read-whole-doc",
+      "prompt": "AGENTS.md in a repo is 180 lines. You're in a hurry and your task looks simple. How much of it do you read, and why?",
+      "checks": [
+        { "type": "regex", "value": "(?i)whole|entire|all of it|top to bottom|fully" },
+        { "type": "regex", "value": "(?i)constraint|miss|skim" }
+      ]
+    },
+    {
+      "id": "extract-constraints",
+      "prompt": "An agent doc says: 'No build step. Python 3.11 pinned. Never touch payment_math.py without a reviewer. Branches: swarm/<task>.' What do you do with these statements before starting work?",
+      "checks": [
+        { "type": "regex", "value": "(?i)task notes|record|write.{0,30}down|extract|list" },
+        { "type": "regex", "value": "(?i)constraint" },
+        { "type": "regex", "value": "(?i)(check|verify|re-?check).{0,60}(before|at).{0,30}(handoff|submit|finish|pr)|pre-?submit" }
+      ]
+    },
+    {
+      "id": "follow-branch-conventions",
+      "prompt": "The repo's agent doc specifies branch naming swarm/<feature> and conventional-commit messages. Your personal habit is feature/<name> branches and free-form messages. Which convention do you use for this repo's PR?",
+      "checks": [
+        { "type": "regex", "value": "(?i)swarm/" },
+        { "type": "regex", "value": "(?i)repo('s)? convention|the repo|their convention|conventional commit" }
+      ]
+    },
+    {
+      "id": "update-doc-after-shipping",
+      "prompt": "You finished a task that changed the architecture described in the repo's HANDOFF.md/AI_CONTEXT.md. What is your final obligation to the next agent before you close out?",
+      "checks": [
+        { "type": "regex", "value": "(?i)update.{0,60}(doc|HANDOFF|AI_CONTEXT|agent)" },
+        { "type": "regex", "value": "(?i)next (agent|assistant|contributor)|stale|current" }
+      ]
+    }
+  ]
+}

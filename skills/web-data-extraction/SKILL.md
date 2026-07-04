@@ -3,7 +3,7 @@ name: web-data-extraction
 description: Patterns for fetching and extracting data from websites reliably and politely. Covers fetch-to-markdown pipelines, pagination strategies, rate limiting and robots etiquette, structured extraction into schemas, and validating scraped data before use. Use when a task requires collecting data from web pages, APIs, or feeds at more than trivial scale.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "2.0.0"
 ---
 
 # Web Data Extraction

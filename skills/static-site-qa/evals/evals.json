@@ -1,0 +1,55 @@
+{
+  "skill": "static-site-qa",
+  "cases": [
+    {
+      "id": "never-assess-from-source",
+      "prompt": "You made CSS layout changes to three pages of a hand-rolled static site. There is no build and no tests. Describe your minimum verification before opening the PR.",
+      "checks": [
+        { "type": "regex", "value": "(?i)serve|http\\.server|local server" },
+        { "type": "regex", "value": "(?i)screenshot" },
+        { "type": "regex", "value": "(?i)mobile|breakpoint|390|viewport" }
+      ]
+    },
+    {
+      "id": "two-breakpoints-minimum",
+      "prompt": "You rendered your static-site changes at desktop width and they look great. Is that sufficient visual verification? Answer and explain the canonical failure mode this misses.",
+      "checks": [
+        { "type": "regex", "value": "(?i)\\bno\\b|not sufficient|insufficient" },
+        { "type": "regex", "value": "(?i)mobile|small (screen|viewport)|breakpoint" }
+      ]
+    },
+    {
+      "id": "link-check",
+      "prompt": "You restructured several pages of a static site, renaming two HTML files. Beyond visual checks, what class of regression must you check for, and how?",
+      "checks": [
+        { "type": "regex", "value": "(?i)link|404|broken" },
+        { "type": "regex", "value": "(?i)crawl|check(er)?|every page|all (internal )?links|sitemap" }
+      ]
+    },
+    {
+      "id": "sitemap-consistency",
+      "prompt": "You added a new page to a static site that has a sitemap.xml. What must stay consistent, and what do you check in both directions?",
+      "checks": [
+        { "type": "regex", "value": "(?i)sitemap" },
+        { "type": "regex", "value": "(?i)(add|include|list).{0,60}(new page|url)|new page.{0,60}sitemap" },
+        { "type": "regex", "value": "(?i)(sitemap|entry|url).{0,80}(exist|real|live|actual page|no longer|removed|stale)" }
+      ]
+    },
+    {
+      "id": "post-deploy-live-check",
+      "prompt": "Your static-site PR merged and the deploy workflow reported success. Are you done? State the last step and why it exists.",
+      "checks": [
+        { "type": "regex", "value": "(?i)live|production|deployed url|real url" },
+        { "type": "regex", "value": "(?i)fetch|open|visit|check|verify|screenshot" }
+      ]
+    },
+    {
+      "id": "revert-cost-framing",
+      "prompt": "A teammate argues that shipping ten quick unverified visual tweaks fast is better than shipping five verified ones slowly, since reverting is cheap. Give the counterargument this QA discipline is built on, in one or two sentences.",
+      "checks": [
+        { "type": "regex", "value": "(?i)revert" },
+        { "type": "regex", "value": "(?i)trust|cost|faith|confidence" }
+      ]
+    }
+  ]
+}

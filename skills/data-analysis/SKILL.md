@@ -3,7 +3,7 @@ name: data-analysis
 description: Methodology for loading, cleaning, and analyzing tabular data (CSV, JSON, SQL, spreadsheets) without fooling yourself. Covers sanity-checking data before analysis, writing reproducible analysis scripts instead of ad-hoc REPL math, honest aggregation (denominators, baselines, Simpson's paradox), and choosing charts versus tables for the result. Use when a task involves computing numbers, statistics, or trends from a dataset — especially data you did not produce yourself.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "2.0.0"
 ---
 
 # Data Analysis

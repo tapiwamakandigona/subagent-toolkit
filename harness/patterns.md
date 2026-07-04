@@ -75,7 +75,7 @@ The default backbone. Everything else is a variation.
 1. Producer agent builds the artifact (any role in `../agents/`).
 2. A **separate** reviewer agent (`../agents/reviewer.md`) reviews against the original brief and returns APPROVE / APPROVE-WITH-FIXES / REJECT with located findings.
 3. On non-approval, producer addresses findings (with the review in its brief) and resubmits.
-4. Cap at 2–3 rounds. Non-convergence means the brief is wrong or the approach is — escalate, don't loop.
+4. Cap at ≤3 rounds. Non-convergence means the brief is wrong or the approach is — escalate, don't loop.
 
 **Failure modes:**
 - *Self-review masquerading as review.* The same agent (or same context window) reviewing its own work inherits its own blind spots. Independence is the entire point.
