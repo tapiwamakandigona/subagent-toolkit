@@ -80,6 +80,14 @@ taxonomies.
   freezes instructions mid-run (and pinned fan-outs stop hammering the
   remote); an existing target dir missing `agents/` or `skills/` is rejected
   instead of half-trusted.
+- `bootstrap.sh`: running from inside a checkout with an `ABILITIES_REF`
+  that doesn't match HEAD now logs a loud warning (the checkout is never
+  mutated, but a pinned caller must not get unpinned instructions
+  silently); and under `ABILITIES_NO_UPDATE=1`, a locally-resolvable ref
+  whose checkout fails (dirty worktree) dies with a clear error instead of
+  falling through to network fetches. Both covered by new smoke tests.
+- All 5 new archetype skills ship `evals/evals.json` (6–7 cases each),
+  keeping the "every skill has evals" convention intact (117 cases total).
 - `agents/reviewer.md` contradiction (readonly profile vs Bash tool)
   resolved: reviewers MAY execute read-only checks, MUST NOT edit.
 - `harness/scripts/manifest.py` now discovers nested prompts
@@ -89,7 +97,14 @@ taxonomies.
 
 - README documents that branch refs are not reproducible pins (use tags or
   SHAs) and adds the "Full-project mode" section.
-- All agents, skills, and prompts bumped to `metadata.version: "2.0.0"`.
+- All agents and skills bumped to `metadata.version: "2.0.0"` (prompt files
+  carry no version metadata by design).
+- The 5 new archetype skills were added beyond the original two-builder file
+  plan as a deliberate design addendum: a portfolio-research pass identified
+  recurring project archetypes (buildless web apps, static-export webapps,
+  platform deploys, site QA, convention discovery) that the pack had no
+  generic coverage for; they were built by a dedicated third builder with
+  disjoint file ownership (`skills/**` only).
 
 ## [1.1.0] - 2026-07-02
 

@@ -3,7 +3,7 @@ name: security-review
 description: A reviewer-oriented procedure for security-checking code, configurations, and agent pipelines. Covers secret handling, the major injection classes (SQL, shell, path, and prompt injection), authentication versus authorization checks, dependency risk, unsafe deserialization, and safe handling of untrusted input in agent workflows. Use when reviewing code or a system for security issues, before shipping anything that handles untrusted input or credentials, or when auditing an agent pipeline that processes external content.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "2.0.0"
 ---
 
 # Security Review

@@ -1,0 +1,63 @@
+{
+  "skill": "static-export-webapp",
+  "cases": [
+    {
+      "id": "export-forbids-server-features",
+      "prompt": "A Next.js app has output: 'export' in its config. A ticket asks you to add an API route handler that reads request cookies to personalize a page. What do you do?",
+      "checks": [
+        { "type": "regex", "value": "(?i)static export|output.{0,15}export" },
+        { "type": "regex", "value": "(?i)external backend|baas|serverless|backend platform|cannot|not (possible|supported|exist)" },
+        { "type": "not_contains", "value": "remove output: 'export'" }
+      ]
+    },
+    {
+      "id": "verify-exported-artifact",
+      "prompt": "Your change works perfectly on the Next.js dev server. List the verification chain you run before handing off, given the deploy artifact is the static out/ directory.",
+      "checks": [
+        { "type": "regex", "value": "(?i)lint" },
+        { "type": "regex", "value": "(?i)build|export" },
+        { "type": "regex", "value": "(?i)serv(e|ing).{0,60}(out|export|dist)|out/.{0,60}serv" }
+      ]
+    },
+    {
+      "id": "public-env-vars",
+      "prompt": "You need the app to know a backend endpoint URL at runtime in a Next.js static export. A teammate suggests reading process.env.BACKEND_URL in the component. Explain what actually happens with env vars in a static export and what the correct pattern is.",
+      "checks": [
+        { "type": "regex", "value": "(?i)NEXT_PUBLIC|public" },
+        { "type": "regex", "value": "(?i)build.?time|inlined|baked|at build" }
+      ]
+    },
+    {
+      "id": "dynamic-routes-enumeration",
+      "prompt": "A statically exported app has a dynamic route /items/[id]. New items are added to the database weekly. Why is this a problem for the export, and what are the standard resolutions?",
+      "checks": [
+        { "type": "regex", "value": "(?i)generateStaticParams|enumerat|build time|known at build" },
+        { "type": "regex", "value": "(?i)client.?side|query param|fetch|catch-all|rebuild" }
+      ]
+    },
+    {
+      "id": "money-code-review-gate",
+      "prompt": "You just modified the currency conversion and checkout total logic in a static-export storefront. What extra gate applies to this change before it merges, beyond the normal verification chain?",
+      "checks": [
+        { "type": "regex", "value": "(?i)security review|review.?gated|reviewer|mandatory review|second (set of eyes|agent)" },
+        { "type": "regex", "value": "(?i)money|payment|currency|parity|total" }
+      ]
+    },
+    {
+      "id": "docs-newer-than-training",
+      "prompt": "The repo uses a framework version released after your training data, and its node_modules or docs/ folder ships the framework's own documentation. You're unsure whether an API you remember still exists. What do you do?",
+      "checks": [
+        { "type": "regex", "value": "(?i)read.{0,60}(bundled|shipped|local|repo).{0,30}doc|doc.{0,60}(bundled|in the repo|shipped|node_modules)" },
+        { "type": "not_contains", "value": "trust my memory" }
+      ]
+    },
+    {
+      "id": "capacitor-packaging",
+      "prompt": "The same static-export app also ships as an Android APK via Capacitor. After changing frontend code, what does the mobile variant additionally require before you can claim the change works on mobile?",
+      "checks": [
+        { "type": "regex", "value": "(?i)sync|copy|capacitor" },
+        { "type": "regex", "value": "(?i)apk|android|build|emulator|device" }
+      ]
+    }
+  ]
+}

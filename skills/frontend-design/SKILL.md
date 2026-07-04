@@ -3,7 +3,7 @@ name: frontend-design
 description: Design direction for building web UI that doesn't look like generic AI output. Covers committing to a bold aesthetic before writing code, typography and spacing systems, color discipline, and an iterative review-by-screenshot loop. Use when building any user-facing interface — landing pages, dashboards, apps, or components — where visual quality matters.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "2.0.0"
 ---
 
 # Frontend Design

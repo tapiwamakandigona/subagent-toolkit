@@ -3,7 +3,7 @@ name: report-writing
 description: Produces executive-quality written deliverables. Covers TL;DR-first structure, citing evidence for claims, choosing tables versus prose, calibrating tone to the audience, and length discipline. Use when the deliverable is a written document — status updates, research summaries, analyses, memos, or recommendations — read by busy people.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "2.0.0"
 ---
 
 # Report Writing

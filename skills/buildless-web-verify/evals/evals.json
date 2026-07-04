@@ -1,0 +1,55 @@
+{
+  "skill": "buildless-web-verify",
+  "cases": [
+    {
+      "id": "recognize-buildless-constraint",
+      "prompt": "You open a repo with no package.json, an import map in index.html pointing bare specifiers at vendor/, and a deploy workflow that uploads the repo root verbatim to static hosting. You're asked to add a charting library. What constraint governs how you add it, and how do you add it?",
+      "checks": [
+        { "type": "regex", "value": "(?i)buildless|no build step|without a build" },
+        { "type": "regex", "value": "(?i)vendor" },
+        { "type": "not_contains", "value": "npm install" }
+      ]
+    },
+    {
+      "id": "no-bundler-refactor",
+      "prompt": "A repo serves plain ES modules directly from source with an import map. Someone suggests 'modernizing' it with Vite for faster iteration. The deploy pipeline uploads the working tree as-is to GitHub Pages. Should you add Vite? Answer and justify in 2-3 sentences.",
+      "checks": [
+        { "type": "regex", "value": "(?i)\\bno\\b|should not|don't add|do not add" },
+        { "type": "regex", "value": "(?i)verbatim|as-is|deploy|pipeline|deliberate|intentional" }
+      ]
+    },
+    {
+      "id": "headless-smoke-before-handoff",
+      "prompt": "You changed the renderer setup of a buildless Three.js browser game. Describe exactly how you verify the change actually works before handing off, given you have no test suite but do have headless Chromium available.",
+      "checks": [
+        { "type": "regex", "value": "(?i)headless" },
+        { "type": "regex", "value": "(?i)console (error|log)|console-error" },
+        { "type": "regex", "value": "(?i)local (http )?server|http\\.server|serve" },
+        { "type": "regex", "value": "(?i)screenshot" }
+      ]
+    },
+    {
+      "id": "console-error-capture",
+      "prompt": "Your headless smoke test loads the page and it 'looks fine' in the screenshot, but you haven't looked at anything else. What signal are you missing that most often reveals a broken buildless app, and why is it critical for ES-module apps?",
+      "checks": [
+        { "type": "regex", "value": "(?i)console" },
+        { "type": "regex", "value": "(?i)module|import|404|failed to (load|fetch|resolve)" }
+      ]
+    },
+    {
+      "id": "pages-verbatim-gotcha",
+      "prompt": "A buildless app works locally via python3 -m http.server but is broken after the GitHub Pages deploy. The deploy uploads the repo root verbatim. Name at least two classic causes specific to this setup.",
+      "checks": [
+        { "type": "regex", "value": "(?i)case|absolute path|base path|subpath|/repo|leading slash|jekyll|underscore|404" }
+      ]
+    },
+    {
+      "id": "honest-performance-claims",
+      "prompt": "You optimized a render loop in a browser game but could only verify it in headless Chromium without GPU acceleration. Draft the one-sentence claim you put in your handoff about the performance impact.",
+      "checks": [
+        { "type": "regex", "value": "(?i)headless|without gpu|not (measured|verified) on|software render|unverified|estimate" },
+        { "type": "not_contains", "value": "guaranteed" }
+      ]
+    }
+  ]
+}

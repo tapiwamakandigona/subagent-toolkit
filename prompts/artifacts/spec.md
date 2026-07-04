@@ -1,6 +1,6 @@
 # Artifact: Product Spec
 
-The required skeleton for a product spec — the output of the Spec phase (usually `agents/product-manager.md`) and the input to Architecture. Every phase handoff gets an enforced artifact shape like this one: structured intermediate artifacts raise downstream success rates far more than better role prose does.
+The required skeleton for a product spec — the output of the Spec phase (usually `../../agents/product-manager.md`) and the input to Architecture. Every phase handoff gets an enforced artifact shape like this one: structured intermediate artifacts raise downstream success rates far more than better role prose does.
 
 ## Usage notes
 
