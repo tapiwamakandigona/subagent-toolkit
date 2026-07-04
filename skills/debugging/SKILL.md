@@ -3,7 +3,7 @@ name: debugging
 description: A systematic procedure for finding out why something already broken is broken. Covers reproducing the failure before touching anything, reading the actual error instead of pattern-matching on it, bisecting across inputs/commits/config, instrumenting with logging instead of guessing, testing one hypothesis at a time, and knowing when to stop and report. Use when investigating any failure — a bug report, a failing test, a crashed pipeline, wrong output, or a regression.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "2.0.0"
 ---
 
 # Debugging

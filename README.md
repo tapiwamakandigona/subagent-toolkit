@@ -41,10 +41,10 @@ curl -fsSL https://raw.githubusercontent.com/tapiwamakandigona/subagent-toolkit/
 
 The pack's files become part of your agents' effective system prompt — in production fan-outs, pin them so every subagent gets identical, vetted instructions:
 
-- `ABILITIES_REF=<tag|branch|commit>` — bootstrap checks out exactly this ref after cloning (e.g. `ABILITIES_REF=v1.1.0`).
+- `ABILITIES_REF=<tag|branch|commit>` — bootstrap checks out exactly this ref after cloning (e.g. `ABILITIES_REF=v2.0.0`). Refs that resolve locally are checked out with **no network access**, so pinned fan-outs stay frozen and fast even offline.
 - `ABILITIES_NO_UPDATE=1` — skip the auto-`git pull` on an existing checkout, so instructions can't change mid-run.
 
-Unpinned, bootstrap tracks `main` and updates on every run — fine for exploration, not for reproducible orchestration.
+Pin **tags or commit SHAs** for reproducibility — a branch ref is a moving target, not a pin. Unpinned, bootstrap tracks `main` and updates on every run — fine for exploration, not for reproducible orchestration.
 
 ## Repo layout
 
@@ -60,26 +60,30 @@ subagent-toolkit/
 │   │                      description), references/ for depth, scripts/ for
 │   └── <skill-name>/      code, evals/ for test cases
 ├── agents/              ← role definitions: system prompts with YAML frontmatter
-│   │                      (spec in agents/README.md)
-│   ├── orchestrator.md
-│   ├── researcher.md
-│   ├── code-worker.md
-│   ├── reviewer.md
-│   ├── designer.md
+│   │                      (spec + roster table in agents/README.md)
+│   ├── orchestrator.md      ├ product-manager.md   ┐
+│   ├── researcher.md        ├ architect.md         │ new in v2:
+│   ├── code-worker.md       ├ qa-engineer.md       │ full-project
+│   ├── reviewer.md          ├ integrator.md        │ lifecycle roles
+│   ├── designer.md          └ release-engineer.md  ┘
 │   └── report-writer.md
 ├── prompts/             ← reusable templates with {{placeholders}}
-│   ├── task-briefing.md
-│   ├── plan-then-execute.md
-│   ├── self-review-rubric.md
-│   ├── handoff-report.md
-│   └── verification-loop.md
+│   ├── task-briefing.md       ├ phase-chain.md      ┐
+│   ├── plan-then-execute.md   ├ replan.md           │ new in v2
+│   ├── self-review-rubric.md  ├ pre-submit-gate.md  │
+│   ├── handoff-report.md      └ standing-setup.md   ┘
+│   ├── verification-loop.md
+│   └── artifacts/       ← project-state templates: spec, architecture,
+│                          task-list, checkpoint
 ├── harness/             ← orchestration patterns and context discipline
 │   ├── patterns.md
 │   ├── context-management.md
-│   ├── schemas/         ← JSON Schema for manifest.py output
+│   ├── project-lifecycle.md   ← full-project playbook (spec → release)
+│   ├── schemas/         ← JSON Schemas: manifest.py output, handoff sidecar
 │   └── scripts/         ← manifest.py (JSON manifest + lint), run_evals.py
 │                          (eval validation/runner), check_placeholders.py
-│                          (leftover {{placeholder}} check) — stdlib only
+│                          (leftover {{placeholder}} check), check_contract.py
+│                          (handoff sidecar validator) — stdlib only
 └── tests/               ← pytest suite + bootstrap smoke test
 ```
 
@@ -111,7 +115,7 @@ cp -r ./.abilities/skills/*  .claude/skills/
 cp    ./.abilities/agents/*.md .claude/agents/
 ```
 
-Skills are then auto-invoked when their `description` matches the task; role files become named subagents you can delegate to (`researcher`, `code-worker`, `reviewer`, `designer`, `report-writer`). The exception is `orchestrator` — it's a system prompt for the *top-level* agent, not a delegate: subagents typically can't spawn subagents. Role frontmatter carries Claude-Code-native `tools:`/`model:` keys (see [`agents/README.md`](agents/README.md)), so read-only roles like `reviewer` don't inherit write access.
+Skills are then auto-invoked when their `description` matches the task; role files become named subagents you can delegate to (`researcher`, `code-worker`, `reviewer`, `designer`, `report-writer`, `product-manager`, `architect`, `qa-engineer`, `integrator`, `release-engineer`). The exception is `orchestrator` — it's a system prompt for the *top-level* agent, not a delegate: subagents typically can't spawn subagents. Role frontmatter carries Claude-Code-native `tools:`/`model:` keys (see [`agents/README.md`](agents/README.md)); read-only roles like `reviewer` may execute read-only checks but never edit files.
 
 ### C. Any orchestrator spawning subagents
 
@@ -143,7 +147,18 @@ ABILITY PACK — do this before anything else:
 Do not paste whole files into your report — cite paths instead.
 ```
 
-Replace `{{ROLE}}` with one of: `researcher`, `code-worker`, `reviewer`, `designer`, `report-writer`. (`orchestrator` is for the agent doing the delegating, not for subagents.)
+Replace `{{ROLE}}` with one of: `researcher`, `code-worker`, `reviewer`, `designer`, `report-writer`, `product-manager`, `architect`, `qa-engineer`, `integrator`, `release-engineer`. (`orchestrator` is for the agent doing the delegating, not for subagents.)
+
+## Full-project mode
+
+v2 adds everything needed to run a *whole project* — not just a task — through a swarm:
+
+- [`harness/project-lifecycle.md`](harness/project-lifecycle.md) — the phase playbook (Spec → Architecture → Foundation → Milestone loop → Release), with instructor/worker pairs, gate criteria, and default `[HUMAN GATE]`s.
+- [`prompts/artifacts/`](prompts/artifacts/) — the project-state artifacts each phase produces: `spec.md`, `architecture.md`, `task-list.md`, `checkpoint.md`.
+- [`prompts/phase-chain.md`](prompts/phase-chain.md), [`prompts/replan.md`](prompts/replan.md), [`prompts/pre-submit-gate.md`](prompts/pre-submit-gate.md) — chaining phases, recovering from failed plans, and gating every handoff on cleaned-up, re-verified work.
+- [`prompts/standing-setup.md`](prompts/standing-setup.md) — a template for the *operator's* standing system prompt, so the orchestrator itself runs on vetted instructions.
+- Machine-checkable handoffs: every report ships a `report.json` sidecar matching [`harness/schemas/handoff.schema.json`](harness/schemas/handoff.schema.json); validate with `python3 harness/scripts/check_contract.py <report.json>` — artifacts must exist and be non-empty before a handoff is accepted.
+- Durable project state (`PROJECT.md`, `features.json`, `progress.md`, `checkpoints/`) and orchestrator succession, per [`harness/context-management.md`](harness/context-management.md) §6 — so a run survives context exhaustion and agent restarts.
 
 ## Design principles
 

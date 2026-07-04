@@ -3,7 +3,7 @@ name: code-quality
 description: Practices for writing and reviewing code as an autonomous agent. Covers making the smallest useful change, reading code before writing it, targeted testing, defensive refactoring, and commit hygiene. Use whenever modifying an existing codebase, writing new code that others will maintain, or reviewing code changes.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "2.0.0"
 ---
 
 # Code Quality for Agents

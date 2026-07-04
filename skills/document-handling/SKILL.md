@@ -3,7 +3,7 @@ name: document-handling
 description: Procedures for producing and editing office and PDF artifacts — docx, xlsx, pptx, and PDF files. Covers choosing the right library for each format and operation, template-based generation over from-scratch construction, using named styles instead of inline formatting, a mandatory render-and-inspect verification loop, and the common gotchas of each format. Use when a deliverable is a Word document, Excel workbook, PowerPoint deck, or PDF — whether creating, editing, or filling one.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "2.0.0"
 ---
 
 # Document Handling

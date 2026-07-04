@@ -245,11 +245,12 @@ def collect_prompts(root):
     prompts_dir = root / "prompts"
     if not prompts_dir.is_dir():
         return prompts
-    for md in sorted(prompts_dir.glob("*.md")):
+    for md in sorted(prompts_dir.rglob("*.md")):
         text = md.read_text(encoding="utf-8", errors="replace")
+        rel_name = md.relative_to(prompts_dir).with_suffix("")
         prompts.append(
             {
-                "name": md.stem,
+                "name": "/".join(rel_name.parts),
                 "description": first_prose_line(text),
                 "path": str(md.relative_to(root)),
             }

@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/tapiwamakandigona/subagent-toolkit/main/harness/schemas/handoff.schema.json",
+  "title": "subagent-toolkit handoff sidecar",
+  "description": "Machine-readable sidecar (report.json) written next to a handoff report (prompts/handoff-report.md) so orchestrators can triage many agents programmatically. Validate with harness/scripts/check_contract.py. Deliberately tolerant (additionalProperties: true) so harnesses can add fields without breaking consumers.",
+  "type": "object",
+  "required": ["run_id", "agent", "status", "artifacts"],
+  "additionalProperties": true,
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "The RUN_ID from the brief; ties the sidecar to a trace tree."
+    },
+    "agent": {
+      "type": "string",
+      "description": "Agent slug (role or per-run identity, e.g. 'code-worker' or 'builder-b')."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["complete", "partial", "blocked", "failed"],
+      "description": "Machine-parseable outcome; mirrors the report's STATUS line."
+    },
+    "artifacts": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Paths to every deliverable produced. Each must exist and be non-empty; check_contract.py enforces this."
+    },
+    "verified": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Claims the agent actually checked, one per entry."
+    },
+    "assumed": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Claims the agent relied on but did not check."
+    },
+    "implicit_decisions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Style, interpretation, and edge-case choices the brief didn't specify."
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Paths to proof artifacts (test output, logs, screenshots) backing completion claims."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Anything else the orchestrator should read, briefly."
+    }
+  }
+}
