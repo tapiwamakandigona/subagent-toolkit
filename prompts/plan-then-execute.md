@@ -32,9 +32,12 @@ PHASE 2 — EXECUTE
 - Follow the plan step by step, verifying each step before the next.
 - Before any [IRREVERSIBLE] step, re-check its preconditions explicitly.
 - If reality diverges from the plan, stop, write a one-line plan amendment
-  (what changed and why), then continue. Three amendments = replan from scratch.
-- Finish with a report per {{abilities_dir}}/prompts/handoff-report.md, including
-  the final plan with per-step outcomes (done / amended / skipped-because).
+  (what changed and why), then continue. Three amendments = replan from
+  scratch using {{abilities_dir}}/prompts/replan.md.
+- Before reporting, run {{abilities_dir}}/prompts/pre-submit-gate.md; then
+  report per {{abilities_dir}}/prompts/handoff-report.md, including the final
+  plan with per-step outcomes (done / amended / skipped-because) and each
+  step's result labeled VERIFIED or ASSUMED.
 ```
 
 ### Example (filled)

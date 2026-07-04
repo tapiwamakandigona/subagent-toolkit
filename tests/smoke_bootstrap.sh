@@ -117,8 +117,9 @@ run_suite() { # $1=shell
     git config user.name smoke
     cp "$REPO_ROOT/bootstrap.sh" .
     printf '# fixture v1\n' >README.md
-    mkdir -p agents
+    mkdir -p agents skills
     printf 'placeholder\n' >agents/.keep
+    printf 'placeholder\n' >skills/.keep
     git add -A
     git commit --quiet -m 'fixture: first release'
     git tag v9.9.8-test
@@ -148,7 +149,42 @@ run_suite() { # $1=shell
     fail "$shell: no pin confirmation in stderr (see $work/err5.txt)"
   fi
   check_output "$shell/tag-pin" "$out5"
+
+  # --- 6. locally-resolvable ref + NO_UPDATE: zero network needed -----------
+  # Delete the fixture remote so any fetch/pull would fail, then re-pin the
+  # same tag with ABILITIES_NO_UPDATE=1. The ref resolves locally, so the
+  # run must succeed entirely offline.
+  rm -rf "$fixture"
+  out6="$work/out6.txt"
+  if (cd "$work" && ABILITIES_NO_UPDATE=1 ABILITIES_REF=v9.9.8-test \
+        "$shell" "$REPO_ROOT/bootstrap.sh" "$pin_target" >"$out6" 2>"$work/err6.txt"); then
+    pass "$shell: local-ref pin succeeds with remote gone (no fetch)"
+  else
+    fail "$shell: local-ref pin failed offline (see $work/err6.txt)"
+  fi
+  if grep -q 'resolved locally, no fetch' "$work/err6.txt"; then
+    pass "$shell: local-ref pin skipped the network"
+  else
+    fail "$shell: no local-resolution confirmation in stderr"
+  fi
+  check_output "$shell/local-pin" "$out6"
   rm -rf "$fixroot"
+
+  # --- 7. tampered target (bootstrap.sh present, agents/skills missing) -----
+  bad_target="$work/tampered target"
+  mkdir -p "$bad_target"
+  cp "$REPO_ROOT/bootstrap.sh" "$bad_target/"
+  if (cd "$work" && "$shell" "$REPO_ROOT/bootstrap.sh" "$bad_target" \
+        >"$work/out7.txt" 2>"$work/err7.txt"); then
+    fail "$shell: tampered target was accepted (should die)"
+  else
+    pass "$shell: tampered target rejected"
+  fi
+  if grep -q 'missing agents/ and/or skills/' "$work/err7.txt"; then
+    pass "$shell: tampered target error names the missing dirs"
+  else
+    fail "$shell: tampered-target error message missing (see $work/err7.txt)"
+  fi
 }
 
 run_suite sh
