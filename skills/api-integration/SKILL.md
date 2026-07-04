@@ -3,7 +3,7 @@ name: api-integration
 description: Patterns for integrating with third-party APIs reliably and safely. Covers reading docs and OpenAPI specs before the first call, authentication handling without leaking secrets, pagination and rate-limit discipline, idempotency for write operations, a retryable-versus-not error taxonomy, testing against sandboxes before production, and webhook basics. Use when a task requires calling, integrating, or building against an external HTTP API — especially one with authentication or write operations.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "2.0.0"
 ---
 
 # API Integration

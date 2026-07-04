@@ -34,8 +34,16 @@ The default backbone. Everything else is a variation.
 3. Spawn all agents at once; collect reports; verify each; integrate.
 4. Shared files (a README both agents' work feeds into, an index) are owned by the **orchestrator** or by exactly one agent — never "whoever gets there first".
 
+**When path ownership can't partition the work** — real codebases have inherently shared files (lockfiles, `package.json`, route tables, migrations, DI registries). Don't force a partition that doesn't exist; switch to the integration pattern:
+
+1. **Isolate writers**: one branch or worktree per agent. The **single-writer rule** still holds inside each isolation unit — at most one agent may write a given path set at a time; every other parallel agent is a reader, advisor, or verifier.
+2. **Freeze the interfaces** the parallel work shares before spawning (publish them verbatim in every brief, from the architecture artifact if one exists — see [`project-lifecycle.md`](project-lifecycle.md)). Writers may not change a frozen interface; a needed change goes back to the orchestrator as a report, not an edit.
+3. **Serialize integration.** The orchestrator (or a dedicated integrator role) merges branches **one at a time, in a deliberate order** — foundations first, then dependents. Never merge in parallel or "whichever finishes first".
+4. **Resolve conflicts in fresh context.** A merge conflict is its own task for an agent that saw neither writer's transcript — it judges from the diff, the interfaces, and the briefs.
+5. **Regenerate, don't hand-merge, generated and shared files** (lockfiles, route tables, migration indexes): the integrator re-runs the generator after each merge instead of textually reconciling two generated versions.
+
 **Failure modes:**
-- *Ownership overlap.* Two agents editing one file is a planning bug; last-writer-wins destroys work silently. There is no acceptable merge strategy — fix the partition.
+- *Ownership overlap.* Two agents editing one file without branch isolation is a planning bug; last-writer-wins destroys work silently. Default to disjoint path ownership; when that's impossible, use the integration pattern above — never "both edit and hope".
 - *Hidden coupling.* Tasks that look independent but share an interface (naming scheme, data format). Pin the interface in every brief ("skill folders are named lowercase-hyphens; frontmatter keys are exactly `name`, `description`").
 - *Fan-out for its own sake.* Two coupled tasks run in parallel produce two half-answers plus a reconciliation task. When in doubt, pipeline.
 - *Actions carry implicit decisions.* Every edit or output embeds choices (naming, structure, interpretation) the brief didn't specify. Parallel writers each decide differently, and the conflicts surface only at integration. This is why fan-out suits read-heavy work and betrays write-heavy work — see "When NOT to multi-agent" below.
@@ -67,7 +75,7 @@ The default backbone. Everything else is a variation.
 1. Producer agent builds the artifact (any role in `../agents/`).
 2. A **separate** reviewer agent (`../agents/reviewer.md`) reviews against the original brief and returns APPROVE / APPROVE-WITH-FIXES / REJECT with located findings.
 3. On non-approval, producer addresses findings (with the review in its brief) and resubmits.
-4. Cap at 2–3 rounds. Non-convergence means the brief is wrong or the approach is — escalate, don't loop.
+4. Cap at ≤3 rounds. Non-convergence means the brief is wrong or the approach is — escalate, don't loop.
 
 **Failure modes:**
 - *Self-review masquerading as review.* The same agent (or same context window) reviewing its own work inherits its own blind spots. Independence is the entire point.
@@ -85,7 +93,7 @@ The default backbone. Everything else is a variation.
 
 | Class | Symptom | Response |
 |---|---|---|
-| **Stalled** | no report within the timebox | kill it; retry once with a tighter scope and an explicit budget |
+| **Stalled** | no report within the timebox | put the timebox in the brief at spawn time (most harnesses can't kill a running agent); treat overdue as Malformed — inspect the trace dir and artifacts, salvage or retry once with a tighter scope |
 | **Failed** | report says the approach didn't work | retry once with a *sharpened* brief that cites the failure verbatim and rules out the dead end |
 | **Blocked** | report says a dependency/permission/path is missing | fix the blocker yourself (it's usually a briefing bug), then re-run; don't re-brief the same hole |
 | **Malformed** | empty, truncated, or off-format report but artifacts may exist | inspect the artifacts directly; if usable, salvage and note it; if not, treat as Failed |
@@ -117,25 +125,47 @@ Patterns compose: a pipeline stage can itself fan out; a critic loop can gate a 
 
 Default to a single agent; multi-agent is the exception you justify.
 
-- **Single-threaded first.** If one focused agent can finish inside its context window and your deadline, delegation only adds briefing overhead, integration work, and new failure modes.
-- **Parallelize read-heavy, serialize write-heavy.** Research, review, and data-gathering fan out well — reads don't conflict. Coding, design, and anything where outputs must fit together serialize better, because actions carry implicit decisions (pattern 2) and parallel writers make them differently.
+- **Single-threaded first.** If one focused agent can finish inside its context window and your deadline, delegation only adds briefing overhead, integration work, and new failure modes. A multi-agent run commonly burns ~15× the tokens of a single-agent chat — the value of the result has to carry that.
+- **Parallelize read-heavy, serialize write-heavy.** Research, review, and data-gathering fan out well — reads don't conflict. Coding, design, and anything where outputs must fit together serialize better, because actions carry implicit decisions (pattern 2) and parallel writers make them differently. Extra agents contribute intelligence (research, review, advice) more safely than actions (edits).
 - **Coupled tasks are one task.** If two tasks share an interface you can't pin verbatim in both briefs, they aren't independent — pipeline them or merge them.
 
 ### Budgets & effort scaling
 
-Agents overspend when effort isn't stated. Put explicit numbers in every brief (the BUDGET line in `../prompts/task-briefing.md`) and scale them to the task:
+Agents overspend when effort isn't stated. Put explicit numbers in every brief (the BUDGET line in `../prompts/task-briefing.md`) and scale them to the task class:
 
-- **Simple fact-find:** 1 agent, ~3–10 tool calls. No fan-out.
-- **Comparison / multi-source question:** 2–4 subagents, ~10–15 calls each.
-- **Genuinely wide work** (many independent shards, large research sweeps): 10+ subagents — rare, and only when the partition is truly disjoint.
-- **Cost reality:** a multi-agent run commonly burns ~15× the tokens of a single-agent chat. The value of the result has to carry that.
+| Task class | Agents | Budget per agent |
+|---|---|---|
+| Trivial (lookup, one-file tweak) | 0 — do it yourself | — |
+| Simple fact-find or bounded fix | 1 | ~3–10 tool calls |
+| Comparison / multi-source question | 2–4 | ~10–15 calls each |
+| Genuinely wide, disjoint shards | 5+ (rare) | stated per shard |
+| Engineering milestone (build + verify a feature set) | 1 writer + readers/verifiers | a per-milestone envelope — often hundreds of calls; state it, plus a timebox, in the brief |
+
+When in doubt, fewer agents with bigger budgets beats more agents with vague ones.
+
+- **Timeboxing over killing:** put the timebox in the brief; treat overdue as Malformed (§5). Don't plan around a kill switch you may not have.
+- **Per-milestone envelopes:** for project-scale work, budget at the milestone level (see [`project-lifecycle.md`](project-lifecycle.md)) and let the milestone's orchestrating brief subdivide it, rather than guessing per-task numbers up front.
 - **Stop criteria:** every budget names what happens at exhaustion — report partial results and stop. An agent that "pushes on to finish" past budget is defecting, not being diligent.
+
+### Loop guards
+
+Unbounded loops are how runs die quietly. Decide these caps at planning time and write them into the plan:
+
+- **Review cycles ≤ 3.** A producer/reviewer pair that hasn't converged in three rounds has a wrong brief or a wrong approach — escalate, don't run round four.
+- **No-progress detection.** Two consecutive iterations with no diff and no test-result delta means the agent is spinning: halt that line of work and replan. Repetition is evidence, not persistence.
+- **Iteration and budget caps on every loop** (retry loops, fix loops, polling loops), each with a named action at the cap — report partial, escalate, or descope with a note.
+- **Risk-tiered action gating.** Read-only actions: automatic. Workspace writes inside owned paths: automatic. Destructive operations, production systems, spending money: human gate — a named pause for approval, never a prompt-level "be careful". Deny by default what you can't undo.
 
 ### Tracing: file-based run logs
 
 Multi-agent failures are undebuggable without a trace. The no-infra convention:
 
 - The orchestrator assigns a **run ID** at planning time and puts it in every brief (the RUN_ID line in `../prompts/task-briefing.md`).
-- Each subagent **appends** to `runs/<run-id>/` — its report, key intermediate artifacts, and (on failure) whatever it had.
-- The orchestrator keeps `runs/<run-id>/decisions.md`: one line per delegation, verification outcome, retry, and descope, as they happen.
+- The orchestrator also picks an **absolute base path** for the trace tree and puts it in every brief. Agents spawned in different working directories writing to a relative `runs/` scatter the trace; the absolute path is what keeps it one tree.
+- Each subagent writes only inside **its own directory**, `<base>/runs/<run-id>/<agent-slug>/` — its report, key intermediate artifacts, and (on failure) whatever it had. Per-agent directories are what let ten parallel agents trace without filename collisions.
+- The orchestrator keeps `<base>/runs/<run-id>/decisions.md`: one line per delegation, verification outcome, retry, and descope, as they happen.
 - Reports cite the trace path, so any later agent (or human) can reconstruct the run from disk alone.
+
+---
+
+Three rules worth restating: default to a single agent and justify every additional one; at most one writer per path set at a time; cap every loop and name what happens at the cap.

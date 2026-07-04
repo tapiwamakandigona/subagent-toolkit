@@ -1,0 +1,52 @@
+{
+  "skill": "appwrite-platform",
+  "cases": [
+    {
+      "id": "deploy-is-not-done-at-post",
+      "prompt": "Your script POSTs a tarball to the Appwrite Sites deployments endpoint and gets a 202-style accepted response. Is the deploy done? Describe what a correct deploy script does next.",
+      "checks": [
+        { "type": "regex", "value": "(?i)\\bno\\b|not (done|finished|complete)" },
+        { "type": "regex", "value": "(?i)poll|status|ready|building|processing" },
+        { "type": "regex", "value": "(?i)fetch|curl|verify|live url|check the (site|deployed)" }
+      ]
+    },
+    {
+      "id": "tar-exclusions",
+      "prompt": "Write the list of things you must exclude when tarring a static site directory for an Appwrite Sites deployment, and say why.",
+      "checks": [
+        { "type": "regex", "value": "(?i)\\.git" },
+        { "type": "regex", "value": "(?i)deploy_key|\\benv\\b|\\.env|secret|key" }
+      ]
+    },
+    {
+      "id": "public-vs-private-identifiers",
+      "prompt": "A teammate is alarmed that the Appwrite project ID and endpoint URL are visible in the shipped frontend bundle. Separately, they propose logging the API key during CI for debugging. Respond to both.",
+      "checks": [
+        { "type": "regex", "value": "(?i)project id.{0,120}(public|fine|expected|not a secret|by design)|(public|fine|expected|not a secret|by design).{0,120}project id" },
+        { "type": "regex", "value": "(?i)(never|do not|don't|must not).{0,80}(log|print|echo).{0,40}(api )?key|(api )?key.{0,80}(never|must not|do not|don't).{0,40}(log|logged|printed)" }
+      ]
+    },
+    {
+      "id": "function-isolated-testing",
+      "prompt": "You wrote a new Appwrite Function that computes order totals. How do you test its logic before deploying it to Appwrite, given deploys are slow and logs are awkward?",
+      "checks": [
+        { "type": "regex", "value": "(?i)local|isolat|unit|stub|mock|extract|pure" }
+      ]
+    },
+    {
+      "id": "oauth-deeplink-mobile",
+      "prompt": "OAuth login via Appwrite works in the web build but the mobile (packaged webview) build never returns to the app after the provider redirect. What is the standard cause and fix?",
+      "checks": [
+        { "type": "regex", "value": "(?i)deep.?link|custom (url )?scheme|callback|redirect (uri|url)" }
+      ]
+    },
+    {
+      "id": "dont-fix-deliberate-deploy-script",
+      "prompt": "You find a deploy script that tars a site and polls the Appwrite API in a loop with sleeps, and it looks 'crude'. You're tempted to rewrite it with the official CLI. What should you check before touching it?",
+      "checks": [
+        { "type": "regex", "value": "(?i)deliberate|intentional|convention|agent doc|why it|reason|AGENTS|AI_CONTEXT" },
+        { "type": "not_contains", "value": "rewrite it immediately" }
+      ]
+    }
+  ]
+}

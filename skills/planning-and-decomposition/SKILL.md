@@ -3,7 +3,7 @@ name: planning-and-decomposition
 description: Converts a fuzzy objective into a staged, executable plan. Covers clarifying the definition of done, structuring a todo list, ordering work by dependencies, placing milestone checkpoints, and recognizing when to replan versus push through. Use at the start of any multi-step task, and again whenever reality diverges from the plan.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "2.0.0"
 ---
 
 # Planning & Decomposition

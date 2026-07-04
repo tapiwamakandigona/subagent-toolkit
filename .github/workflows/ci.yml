@@ -32,6 +32,15 @@ jobs:
       - name: manifest lint (strict)
         run: python3 harness/scripts/manifest.py --check .
 
+      - name: validate harness schemas parse
+        run: |
+          python3 - <<'EOF'
+          import json, pathlib
+          for p in sorted(pathlib.Path("harness/schemas").glob("*.json")):
+              json.loads(p.read_text(encoding="utf-8"))
+              print(f"ok: {p} parses")
+          EOF
+
       - name: validate skill evals
         run: python3 harness/scripts/run_evals.py --validate
 

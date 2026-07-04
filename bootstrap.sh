@@ -12,7 +12,12 @@
 #                        (default: https://github.com/tapiwamakandigona/subagent-toolkit.git)
 #   ABILITIES_DIR        same as TARGET_DIR
 #   ABILITIES_REF        git tag/branch/commit to check out after clone/update
-#                        (pin a version for reproducible fan-outs)
+#                        (pin a version for reproducible fan-outs).
+#                        Pin TAGS or COMMIT SHAS for reproducibility: a branch
+#                        name is a moving ref, so a branch pin can advance
+#                        between runs whenever a fetch happens. Refs that
+#                        already resolve locally are checked out with no
+#                        network access at all.
 #   ABILITIES_NO_UPDATE  set to 1 to skip the auto `git pull` on existing checkouts
 #
 # Behavior:
@@ -61,6 +66,26 @@ require_git() {
 checkout_ref() { # $1=dir
   [ -n "$REF" ] || return 0
   require_git
+  # If the ref already resolves to a commit locally, check it out with NO
+  # network access. This is what makes ABILITIES_NO_UPDATE=1 + ABILITIES_REF
+  # actually freeze instructions mid-run (a fetch could advance a branch
+  # ref), and it spares a pinned fan-out of many agents from hammering the
+  # remote. Tags and commit SHAs are immutable, so local resolution is
+  # always correct for them; branch pins simply stay at the local tip
+  # (branch refs are not reproducible pins — prefer tags or SHAs).
+  if git -C "$1" rev-parse --verify --quiet "$REF^{commit}" >/dev/null 2>&1; then
+    if git -C "$1" checkout --quiet "$REF" 2>/dev/null; then
+      log "==> Pinned to ref: $REF (resolved locally, no fetch)"
+      return 0
+    fi
+    # Ref resolves locally but checkout failed (dirty worktree?). Under
+    # NO_UPDATE=1 a network fetch cannot fix this and must not happen:
+    # NO_UPDATE + locally-resolvable ref means zero network, period.
+    if [ "$NO_UPDATE" = "1" ]; then
+      die "ABILITIES_REF='$REF' resolves locally but checkout failed (dirty worktree in $1?).
+       Commit/stash local changes, or remove the directory and re-run to clone fresh."
+    fi
+  fi
   # Make the ref resolvable locally. A bare `git fetch origin <ref>` only
   # updates FETCH_HEAD (no local tag/branch ref), so try explicit refspecs
   # first: tag, then branch, then a plain fetch (covers commit SHAs and
@@ -95,7 +120,14 @@ checkout_ref() { # $1=dir
 SELF_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 
 if [ -f "$TARGET/bootstrap.sh" ]; then
-  # Existing checkout: try to update, but never fail the run over it.
+  # Existing checkout: verify it actually looks like the ability pack before
+  # trusting it — a half-deleted or tampered directory that still has a
+  # bootstrap.sh must not pass silently.
+  if [ ! -d "$TARGET/agents" ] || [ ! -d "$TARGET/skills" ]; then
+    die "target '$TARGET' has a bootstrap.sh but is missing agents/ and/or skills/ — not a usable ability pack.
+       Remove it and re-run to clone fresh, or point at a full checkout."
+  fi
+  # Try to update, but never fail the run over it.
   if [ -d "$TARGET/.git" ]; then
     if [ "$NO_UPDATE" = "1" ]; then
       log "==> Using existing ability pack in $TARGET (ABILITIES_NO_UPDATE=1, update skipped)"
@@ -115,6 +147,18 @@ elif [ "$EXPLICIT_TARGET" -eq 0 ] && [ -f "$SELF_DIR/README.md" ] && [ -d "$SELF
   # Running from inside a checkout and no explicit target — no clone needed.
   TARGET="$SELF_DIR"
   log "==> Running from checkout at $TARGET"
+  if [ -n "$REF" ]; then
+    # Never mutate the checkout the script is being run from — but a pinned
+    # caller must not get unpinned instructions silently.
+    if git -C "$TARGET" rev-parse --verify --quiet HEAD >/dev/null 2>&1 \
+         && [ "$(git -C "$TARGET" rev-parse --verify --quiet "$REF^{commit}" 2>/dev/null)" = "$(git -C "$TARGET" rev-parse HEAD)" ]; then
+      log "==> Checkout already at ABILITIES_REF=$REF"
+    else
+      log "    warning: ABILITIES_REF=$REF NOT applied: running from inside a checkout, which is never mutated.
+    warning: you are getting this checkout's current contents. For a real pin, use an explicit target:
+    warning:   ABILITIES_REF=$REF sh bootstrap.sh /path/to/pack"
+    fi
+  fi
 else
   require_git
   if [ -e "$TARGET" ] && [ ! -d "$TARGET" ]; then

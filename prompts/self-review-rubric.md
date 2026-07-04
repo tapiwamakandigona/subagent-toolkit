@@ -6,7 +6,7 @@ A structured pass an agent runs on its own output **before** handing off. Self-r
 
 - Run this as a **separate pass** after you believe you're done, not interleaved with production. Fresh eyes, even your own, need distance.
 - Answer every item in writing with evidence (a path, a command output, a quote), not with "yes". An unevidenced ✅ is a ❌.
-- Append the filled rubric to your handoff report.
+- Append the filled rubric to your handoff report. The rubric judges the content; `pre-submit-gate.md` then judges the change set and evidence — run both, rubric first.
 
 ## Template
 
@@ -20,7 +20,8 @@ Definition of done (from the brief): {{criteria}}
 
 2. CORRECTNESS
    - What did I actually run/render/test, and what were the results?
-     (exact commands and outputs, not "tests pass")
+     (exact commands and outputs, not "tests pass" — these become the
+     VERIFIED entries of the handoff report; everything else is ASSUMED)
    - What is the single claim in my output most likely to be wrong? Re-verify
      that one now.
 
@@ -42,7 +43,8 @@ Definition of done (from the brief): {{criteria}}
    What would a hostile reviewer flag first? Either fix it now or state it
    plainly in the report — hidden weaknesses cost more than admitted ones.
 
-Verdict: SHIP / FIX-FIRST (list the fixes, then re-run items they touch)
+Verdict: SHIP / FIX-FIRST (list the fixes, then re-run items they touch;
+after 3 FIX-FIRST rounds, stop polishing and escalate)
 ```
 
 ### Example (filled)
