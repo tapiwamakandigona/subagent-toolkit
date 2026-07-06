@@ -90,6 +90,8 @@ Context windows end; multi-phase work doesn't. The bridge is **structured note-t
 
 then summarize the middle and mark every elision explicitly ("~40 tool calls elided; outcomes logged in progress.md"). An unmarked gap reads as "nothing happened there" — the most expensive lie a notes file can tell.
 
+**Status vocabulary:** notes outlive the context that wrote them, so status words must be unambiguous to a reader with zero shared context. Never write a bare "archived", "done with X", or "parked" — each reads as *finished* to a future agent. Write the status, the reason, and the reopen condition: `PAUSED (reprioritized to comp B; reopen if owner asks or deadline nears)` vs `CLOSED (competition ended 07-04; final score 0.832)`. One ambiguous status word in a handoff note can silently kill a live workstream.
+
 ---
 
 ## 6. Project state protocol
@@ -107,6 +109,8 @@ For project-scale runs (multiple milestones, multiple sessions — see [`project
 Why `features.json` is JSON and why workers can't edit acceptance criteria: structured files resist casual "helpful" rewriting, and an agent that can edit its own success criteria will eventually do so instead of meeting them. The reviewer diff-checks that acceptance criteria and tests weren't touched.
 
 **Session-start ritual (get up to speed):** every session on a project — first or fiftieth — starts the same way: read `PROJECT.md`, `features.json`, and the tail of `progress.md`; skim recent version-control history; run `init.sh` if the environment is cold. Only then act. Never resume from memory of a previous session — memory is what the state files replace.
+
+**Compaction is a session boundary.** When a context window gets compacted or summarized mid-run, the summary is *memory*, not state — it inherits every elision and paraphrase error of the condensation. Treat the moment of compaction exactly like a new session: before making any claim or decision that depends on project state (status of a workstream, what's open vs. closed, what was decided), re-run the session-start ritual against the state files. A post-compaction agent that answers from its summary will confidently report a paused workstream as finished — the summary said "archived", the state file said "best score so far, next ideas listed".
 
 **Constant-context restart:** never continue an old thread into a new task. Each task starts a fresh context briefed from the state files, so task #50 starts as lean as task #5. Long threads accumulate rot; state files don't.
 
