@@ -196,3 +196,51 @@ def test_refuses_existing_state_files(tmp_path):
 def test_empty_name_is_usage_error(tmp_path):
     result = run_cli(tmp_path / "state", "--name", "  ", "--goal", "g")
     assert result.returncode == 2
+
+
+def test_gitignore_created_with_pycache(tmp_path):
+    target, result = scaffold(tmp_path)
+    assert result.returncode == 0
+    gitignore = target / ".gitignore"
+    assert gitignore.is_file()
+    assert "__pycache__/" in gitignore.read_text(encoding="utf-8")
+    assert f"ok: wrote {gitignore}" in result.stdout
+
+
+def test_existing_gitignore_left_untouched(tmp_path):
+    target = tmp_path / "state"
+    target.mkdir()
+    gitignore = target / ".gitignore"
+    gitignore.write_text("custom-rule\n", encoding="utf-8")
+    _, result = scaffold(tmp_path)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert gitignore.read_text(encoding="utf-8") == "custom-rule\n"
+    assert "left untouched" in result.stdout
+
+
+def test_failed_run_cleans_up_gitignore(tmp_path):
+    # Same failure mode as test_post_write_validation_failure_cleans_up:
+    # the .gitignore written by the scaffolder must not survive cleanup.
+    seed_dir = tmp_path / "seeds"
+    seed_dir.mkdir()
+    (seed_dir / "proof.log").write_text("evidence", encoding="utf-8")
+    seed = seed_dir / "seed.json"
+    seed.write_text(
+        json.dumps(
+            [
+                {
+                    "id": "feat-a",
+                    "title": "Done feature",
+                    "acceptance": "It works.",
+                    "passes": True,
+                    "evidence": "proof.log",
+                    "milestone": "m1",
+                }
+            ]
+        ),
+        encoding="utf-8",
+    )
+    target, result = scaffold(tmp_path, "--features", seed)
+    assert result.returncode == 1
+    assert not (target / ".gitignore").exists()
+    assert not target.exists()

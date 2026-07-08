@@ -22,6 +22,8 @@ What it creates under <dir>:
                  cold-start can never be reported green by accident
   checkpoints/   empty, plus features.baseline.json — the orchestrator's
                  tamper-check snapshot for check_features.py --against
+  .gitignore     minimal (`__pycache__/`) so scaffolded runs don't commit
+                 bytecode; skipped untouched if one already exists
 
 Refuses to touch a directory where any of these already exist: scaffolding
 is for new runs, not for repairing live state (exit 1, nothing written).
@@ -74,6 +76,10 @@ PLACEHOLDER_FEATURES = [
     }
 ]
 
+GITIGNORE = """\
+__pycache__/
+"""
+
 INIT_SH = """\
 #!/bin/sh
 # init.sh — bring the dev environment up from cold (install, migrate, run,
@@ -106,10 +112,12 @@ def validate_seed(seed_path):
     return proc.returncode == 0, proc.stdout + proc.stderr
 
 
-def _clean_up(root, created_root):
+def _clean_up(root, created_root, wrote_gitignore=False):
     """Remove everything the scaffolder wrote so a failed run leaves no state."""
     for name in STATE_FILES:
         (root / name).unlink(missing_ok=True)
+    if wrote_gitignore:
+        (root / ".gitignore").unlink(missing_ok=True)
     (root / "checkpoints" / "features.baseline.json").unlink(missing_ok=True)
     checkpoints = root / "checkpoints"
     if checkpoints.is_dir() and not any(checkpoints.iterdir()):
@@ -186,14 +194,23 @@ def main(argv=None):
     init_sh.write_text(INIT_SH, encoding="utf-8")
     init_sh.chmod(init_sh.stat().st_mode | 0o111)
 
+    gitignore = root / ".gitignore"
+    wrote_gitignore = not gitignore.exists()
+    if wrote_gitignore:
+        gitignore.write_text(GITIGNORE, encoding="utf-8")
+
     for name in STATE_FILES:
         print(f"ok: wrote {root / name}")
     print(f"ok: wrote {root / 'checkpoints' / 'features.baseline.json'}")
+    if wrote_gitignore:
+        print(f"ok: wrote {gitignore}")
+    else:
+        print(f"ok: {gitignore} already exists — left untouched")
 
     ok, output = validate_seed(root / "features.json")
     if not ok:
         sys.stdout.write(output)
-        _clean_up(root, created_root)
+        _clean_up(root, created_root, wrote_gitignore)
         return fail(
             "written features.json fails check_features.py from the target dir "
             "(relative evidence paths must resolve there) — cleaned up, "
