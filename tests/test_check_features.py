@@ -116,6 +116,23 @@ def test_evidence_list_and_empty_evidence_file(tmp_path):
     assert "FAIL: signup-dup-409: evidence path is non-empty: empty.log" in r.stdout
 
 
+def test_empty_string_evidence_fails_shape(tmp_path):
+    """evidence: '' (or [''] ) is malformed, matching the schema."""
+    path = make_features(tmp_path)
+    entries = json.loads(path.read_text())
+    entries[1]["evidence"] = ""
+    path.write_text(json.dumps(entries))
+    r = run_cli(str(path))
+    assert r.returncode == 1
+    assert "evidence is a non-empty string or list of them" in r.stdout
+    # whitespace-only paths are equally malformed
+    entries[1]["evidence"] = [" "]
+    path.write_text(json.dumps(entries))
+    r = run_cli(str(path))
+    assert r.returncode == 1
+    assert "evidence is a non-empty string or list of them" in r.stdout
+
+
 def test_special_file_evidence_fails_cleanly(tmp_path):
     """A /dev/null-style evidence path must FAIL, not traceback."""
     path = make_features(tmp_path)

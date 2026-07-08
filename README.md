@@ -41,7 +41,7 @@ curl -fsSL https://raw.githubusercontent.com/tapiwamakandigona/subagent-toolkit/
 
 The pack's files become part of your agents' effective system prompt — in production fan-outs, pin them so every subagent gets identical, vetted instructions:
 
-- `ABILITIES_REF=<tag|branch|commit>` — bootstrap checks out exactly this ref after cloning (e.g. `ABILITIES_REF=v2.0.0`). Refs that resolve locally are checked out with **no network access**, so pinned fan-outs stay frozen and fast even offline.
+- `ABILITIES_REF=<tag|branch|commit>` — bootstrap checks out exactly this ref after cloning (e.g. `ABILITIES_REF=v2.1.0`). Refs that resolve locally are checked out with **no network access**, so pinned fan-outs stay frozen and fast even offline.
 - `ABILITIES_NO_UPDATE=1` — skip the auto-`git pull` on an existing checkout, so instructions can't change mid-run.
 
 Pin **tags or commit SHAs** for reproducibility — a branch ref is a moving target, not a pin. Unpinned, bootstrap tracks `main` and updates on every run — fine for exploration, not for reproducible orchestration.
@@ -156,7 +156,7 @@ Replace `{{ROLE}}` with one of: `researcher`, `code-worker`, `reviewer`, `design
 v2 adds everything needed to run a *whole project* — not just a task — through a swarm:
 
 - [`harness/project-lifecycle.md`](harness/project-lifecycle.md) — the phase playbook (Spec → Architecture → Foundation → Milestone loop → Release), with instructor/worker pairs, gate criteria, and default `[HUMAN GATE]`s.
-- [`prompts/artifacts/`](prompts/artifacts/) — the project-state artifacts each phase produces: `spec.md`, `architecture.md`, `task-list.md`, `checkpoint.md`.
+- [`prompts/artifacts/`](prompts/artifacts/) — the artifacts each phase produces: `spec.md`, `architecture.md`, `task-list.md`, `checkpoint.md`, plus `project-state.md` — templates and a validator-clean `features.json` example for the durable state files.
 - [`prompts/phase-chain.md`](prompts/phase-chain.md), [`prompts/replan.md`](prompts/replan.md), [`prompts/pre-submit-gate.md`](prompts/pre-submit-gate.md) — chaining phases, recovering from failed plans, and gating every handoff on cleaned-up, re-verified work.
 - [`prompts/standing-setup.md`](prompts/standing-setup.md) — a template for the *operator's* standing system prompt, so the orchestrator itself runs on vetted instructions.
 - Machine-checkable handoffs: every report ships a `report.json` sidecar matching [`harness/schemas/handoff.schema.json`](harness/schemas/handoff.schema.json); validate with `python3 harness/scripts/check_contract.py <report.json>` — artifacts must exist and be non-empty before a handoff is accepted.

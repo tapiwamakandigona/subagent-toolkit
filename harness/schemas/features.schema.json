@@ -17,12 +17,12 @@
       },
       "title": {
         "type": "string",
-        "minLength": 1,
+        "pattern": "\\S",
         "description": "One-line human name for the feature."
       },
       "acceptance": {
         "type": "string",
-        "minLength": 1,
+        "pattern": "\\S",
         "description": "The machine-checkable acceptance criterion from the spec — a command, an observable behavior, or a concrete state a test can assert. Owned by the orchestrator; workers never edit it."
       },
       "passes": {
@@ -30,10 +30,11 @@
         "description": "Whether the acceptance criterion has been verified. Only flipped to true with evidence attached."
       },
       "evidence": {
-        "description": "Proof-artifact path(s) — test output, E2E log, screenshot — backing passes: true. A string path or an array of them. Required in practice when passes is true; check_features.py enforces existence and non-emptiness.",
+        "description": "Proof-artifact path(s) — test output, E2E log, screenshot — backing passes: true. A string path, an array of them, or null while passes is false. Required in practice when passes is true; check_features.py enforces existence and non-emptiness.",
         "oneOf": [
-          { "type": "string" },
-          { "type": "array", "items": { "type": "string" } }
+          { "type": "string", "pattern": "\\S" },
+          { "type": "array", "items": { "type": "string", "pattern": "\\S" } },
+          { "type": "null" }
         ]
       },
       "milestone": {
