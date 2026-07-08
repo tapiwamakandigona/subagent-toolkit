@@ -24,9 +24,20 @@ compaction, fan-out scope changes, and orchestrator succession.
   orchestrator's baseline (`--against`). Previously the gate and the
   "workers may only flip `passes`" rule were documented but only manually
   checkable. Wired into `context-management.md` §6,
-  `project-lifecycle.md` §2, and the README; 16 tests.
+  `project-lifecycle.md` §2, and the README; 17 tests.
+- **Project-state file templates**
+  `prompts/artifacts/project-state.md`: required shapes for `PROJECT.md`,
+  `progress.md`, `init.sh`, and a worked `features.json` example that
+  passes `check_features.py` verbatim — the state files three harness docs
+  lean on previously had no template anywhere in the pack.
 
 ### Changed
+
+- `harness/schemas/features.schema.json` aligned with the validator:
+  `title`/`acceptance` must contain non-whitespace, evidence strings must
+  be non-empty, and `evidence: null` is explicitly allowed while
+  `passes` is false; `check_features.py` now rejects empty-string
+  evidence in kind.
 
 - `harness/context-management.md`: compaction is a session boundary;
   unambiguous status vocabulary for notes; successor-completeness rule
