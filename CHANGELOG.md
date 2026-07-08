@@ -228,6 +228,7 @@ taxonomies.
   (`harness/patterns.md`, `harness/context-management.md`), the
   `manifest.py` lint/manifest script, and the `bootstrap.sh` installer.
 
+[2.1.0]: https://github.com/tapiwamakandigona/subagent-toolkit/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/tapiwamakandigona/subagent-toolkit/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/tapiwamakandigona/subagent-toolkit/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/tapiwamakandigona/subagent-toolkit/releases/tag/v1.0.0
