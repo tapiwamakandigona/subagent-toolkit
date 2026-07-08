@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   orchestrator's baseline (`--against`). Previously the gate and the
   "workers may only flip `passes`" rule were documented but only manually
   checkable. Wired into `context-management.md` §6,
-  `project-lifecycle.md` §2, and the README; 15 tests.
+  `project-lifecycle.md` §2, and the README; 16 tests.
 
 ### Changed
 

@@ -116,6 +116,22 @@ def test_evidence_list_and_empty_evidence_file(tmp_path):
     assert "FAIL: signup-dup-409: evidence path is non-empty: empty.log" in r.stdout
 
 
+def test_special_file_evidence_fails_cleanly(tmp_path):
+    """A /dev/null-style evidence path must FAIL, not traceback."""
+    path = make_features(tmp_path)
+    entries = json.loads(path.read_text())
+    entries[0]["evidence"] = "/dev/null"
+    path.write_text(json.dumps(entries))
+    r = run_cli(str(path))
+    assert r.returncode == 1
+    assert "Traceback" not in r.stderr
+    assert (
+        "FAIL: signup-dup-409: evidence path is a regular file or directory: "
+        "/dev/null" in r.stdout
+    )
+    assert "feature check(s) failed" in r.stderr
+
+
 def test_gate_fails_on_unpassed_feature(tmp_path):
     r = run_cli(str(make_features(tmp_path)), "--gate")
     assert r.returncode == 1
@@ -135,6 +151,9 @@ def test_gate_unknown_milestone_fails(tmp_path):
 
 def test_milestone_without_gate_is_usage_error(tmp_path):
     r = run_cli(str(make_features(tmp_path)), "--milestone", "m1")
+    assert r.returncode == 2
+    # empty string must not slip past the guard
+    r = run_cli(str(make_features(tmp_path)), "--milestone", "")
     assert r.returncode == 2
 
 
