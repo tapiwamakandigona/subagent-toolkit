@@ -26,7 +26,9 @@ What it creates under <dir>:
 Refuses to touch a directory where any of these already exist: scaffolding
 is for new runs, not for repairing live state (exit 1, nothing written).
 After writing, it re-validates features.json via the sibling
-check_features.py and reports the result.
+check_features.py from the target directory (relative evidence paths must
+resolve there); on failure it removes everything it wrote, so a failed run
+never leaves partial state behind.
 
 Usage:
     python3 scaffold_project.py <dir> --name NAME --goal GOAL
@@ -85,7 +87,13 @@ exit 1
 
 def fail(msg):
     print(f"FAIL: {msg}")
+    print("\n1 check(s) failed", file=sys.stderr)
     return 1
+
+
+def usage_error(msg):
+    print(f"error: {msg}", file=sys.stderr)
+    return 2
 
 
 def validate_seed(seed_path):
@@ -96,6 +104,18 @@ def validate_seed(seed_path):
         text=True,
     )
     return proc.returncode == 0, proc.stdout + proc.stderr
+
+
+def _clean_up(root, created_root):
+    """Remove everything the scaffolder wrote so a failed run leaves no state."""
+    for name in STATE_FILES:
+        (root / name).unlink(missing_ok=True)
+    (root / "checkpoints" / "features.baseline.json").unlink(missing_ok=True)
+    checkpoints = root / "checkpoints"
+    if checkpoints.is_dir() and not any(checkpoints.iterdir()):
+        checkpoints.rmdir()
+    if created_root and root.is_dir() and not any(root.iterdir()):
+        root.rmdir()
 
 
 def main(argv=None):
@@ -120,6 +140,8 @@ def main(argv=None):
         parser.error("--name and --goal must be non-empty")
 
     root = Path(args.dir)
+    if root.exists() and not root.is_dir():
+        return usage_error(f"{root} exists and is not a directory")
     existing = [p for p in (*STATE_FILES, "checkpoints") if (root / p).exists()]
     if existing:
         return fail(
@@ -130,7 +152,7 @@ def main(argv=None):
     if args.features:
         seed_path = Path(args.features)
         if not seed_path.is_file():
-            return fail(f"seed file not found: {seed_path}")
+            return usage_error(f"no such seed file: {seed_path}")
         ok, output = validate_seed(seed_path)
         if not ok:
             sys.stdout.write(output)
@@ -140,6 +162,7 @@ def main(argv=None):
     else:
         features_text = json.dumps(PLACEHOLDER_FEATURES, indent=2) + "\n"
 
+    created_root = not root.exists()
     root.mkdir(parents=True, exist_ok=True)
     (root / "checkpoints").mkdir()
 
@@ -170,7 +193,12 @@ def main(argv=None):
     ok, output = validate_seed(root / "features.json")
     if not ok:
         sys.stdout.write(output)
-        return fail("written features.json fails check_features.py")
+        _clean_up(root, created_root)
+        return fail(
+            "written features.json fails check_features.py from the target dir "
+            "(relative evidence paths must resolve there) — cleaned up, "
+            "nothing left behind"
+        )
     print("ok: features.json validates against check_features.py")
     print(f"scaffolded {root} — next: fill PROJECT.md pointers, replace init.sh stub")
     return 0

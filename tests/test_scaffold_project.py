@@ -115,11 +115,72 @@ def test_invalid_seed_writes_nothing(tmp_path):
     assert not target.exists()  # nothing partial left behind
 
 
-def test_missing_seed_file_fails(tmp_path):
+def test_missing_seed_file_is_usage_error(tmp_path):
     target, result = scaffold(tmp_path, "--features", tmp_path / "nope.json")
-    assert result.returncode == 1
-    assert "seed file not found" in result.stdout
+    assert result.returncode == 2
+    assert "error: no such seed file" in result.stderr
     assert not target.exists()
+
+
+def test_target_is_regular_file_is_usage_error(tmp_path):
+    target = tmp_path / "state"
+    target.write_text("not a directory", encoding="utf-8")
+    result = run_cli(target, "--name", "Demo", "--goal", "A demo project.")
+    assert result.returncode == 2
+    assert "error:" in result.stderr
+    assert "Traceback" not in result.stderr
+    assert target.read_text(encoding="utf-8") == "not a directory"
+
+
+def test_post_write_validation_failure_cleans_up(tmp_path):
+    # Seed validates pre-write (evidence relative to the seed's own dir) but
+    # fails post-write revalidation from the target dir — must leave nothing.
+    seed_dir = tmp_path / "seeds"
+    seed_dir.mkdir()
+    (seed_dir / "proof.log").write_text("evidence", encoding="utf-8")
+    seed = seed_dir / "seed.json"
+    seed.write_text(
+        json.dumps(
+            [
+                {
+                    "id": "feat-a",
+                    "title": "Done feature",
+                    "acceptance": "It works.",
+                    "passes": True,
+                    "evidence": "proof.log",
+                    "milestone": "m1",
+                }
+            ]
+        ),
+        encoding="utf-8",
+    )
+    target, result = scaffold(tmp_path, "--features", seed)
+    assert result.returncode == 1
+    assert not target.exists(), "failed run must not leave partial state behind"
+
+
+def test_valid_seed_with_absolute_evidence_scaffolds(tmp_path):
+    proof = tmp_path / "proof.log"
+    proof.write_text("evidence", encoding="utf-8")
+    seed = tmp_path / "seed.json"
+    seed.write_text(
+        json.dumps(
+            [
+                {
+                    "id": "feat-a",
+                    "title": "Done feature",
+                    "acceptance": "It works.",
+                    "passes": True,
+                    "evidence": str(proof),
+                    "milestone": "m1",
+                }
+            ]
+        ),
+        encoding="utf-8",
+    )
+    target, result = scaffold(tmp_path, "--features", seed)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert (target / "features.json").is_file()
 
 
 def test_refuses_existing_state_files(tmp_path):

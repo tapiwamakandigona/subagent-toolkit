@@ -17,9 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `passes: false` placeholder that can never pass a gate), append-only
   `progress.md`, an executable `init.sh` stub that exits non-zero until
   replaced, and `checkpoints/` with the `features.baseline.json` tamper
-  snapshot. Refuses to overwrite existing state files. Wired into
+  snapshot. Refuses to overwrite existing state files, and a failed run
+  cleans up after itself — no partial state left behind. Wired into
   `context-management.md` §6, `project-lifecycle.md` §1, the artifact
-  template, and the README; 11 tests.
+  template, and the README; 15 tests.
 
 ## [2.1.0] - 2026-07-08
 
