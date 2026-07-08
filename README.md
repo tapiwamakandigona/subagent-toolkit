@@ -41,7 +41,7 @@ curl -fsSL https://raw.githubusercontent.com/tapiwamakandigona/subagent-toolkit/
 
 The pack's files become part of your agents' effective system prompt — in production fan-outs, pin them so every subagent gets identical, vetted instructions:
 
-- `ABILITIES_REF=<tag|branch|commit>` — bootstrap checks out exactly this ref after cloning (e.g. `ABILITIES_REF=v2.0.0`). Refs that resolve locally are checked out with **no network access**, so pinned fan-outs stay frozen and fast even offline.
+- `ABILITIES_REF=<tag|branch|commit>` — bootstrap checks out exactly this ref after cloning (e.g. `ABILITIES_REF=v2.1.0`). Refs that resolve locally are checked out with **no network access**, so pinned fan-outs stay frozen and fast even offline.
 - `ABILITIES_NO_UPDATE=1` — skip the auto-`git pull` on an existing checkout, so instructions can't change mid-run.
 
 Pin **tags or commit SHAs** for reproducibility — a branch ref is a moving target, not a pin. Unpinned, bootstrap tracks `main` and updates on every run — fine for exploration, not for reproducible orchestration.
