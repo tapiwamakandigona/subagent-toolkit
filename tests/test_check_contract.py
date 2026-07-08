@@ -142,3 +142,34 @@ def test_example_matches_pinned_schema_shape():
     assert schema["properties"]["status"]["enum"] == [
         "complete", "partial", "blocked", "failed",
     ]
+
+
+def test_base_flag_resolves_relative_evidence(tmp_path):
+    base = tmp_path / "elsewhere"
+    base.mkdir()
+    (base / "proof.log").write_text("evidence\n", encoding="utf-8")
+    (base / "artifact.txt").write_text("x\n", encoding="utf-8")
+    path = make_sidecar(
+        tmp_path, {"evidence": ["proof.log"]}, artifacts=["artifact.txt"]
+    )
+    assert run_cli(str(path)).returncode == 1  # not next to the report
+    assert run_cli(str(path), "--base", str(base)).returncode == 0
+
+
+def test_base_not_a_directory_is_usage_error(tmp_path):
+    path = make_sidecar(tmp_path)
+    r = run_cli(str(path), "--base", str(tmp_path / "absent"))
+    assert r.returncode == 2
+    assert "--base is not a directory" in r.stderr
+
+
+def test_help_states_resolution_rule():
+    r = run_cli("--help")
+    assert r.returncode == 0
+    text = r.stdout.replace("\n", " ")
+    assert "--base" in text
+    assert "report" in text and "director" in text  # rule is stated
+
+
+def test_docstring_states_resolution_rule():
+    assert "own directory" in check_contract.__doc__
