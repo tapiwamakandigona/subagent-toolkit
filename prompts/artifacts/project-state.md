@@ -4,6 +4,7 @@ The required shapes for four of the five project-state files of `../../harness/c
 
 ## Usage notes
 
+- Instantiate the whole file set with `python3 harness/scripts/scaffold_project.py <dir> --name N --goal G [--features seed.json]` — it validates the seed first, writes the baseline snapshot to `checkpoints/features.baseline.json`, and leaves `init.sh` as a failing stub so a cold start can't be reported green by accident.
 - The orchestrator creates all four in Foundation and owns `PROJECT.md` and the frozen fields of `features.json`; workers only flip `passes`/fill `evidence`, anyone appends to `progress.md`, and whoever changes the environment keeps `init.sh` true.
 - Snapshot `features.json` (e.g. to `checkpoints/features.baseline.json`) whenever the orchestrator edits it; every gate runs `python3 harness/scripts/check_features.py features.json --gate [--milestone M] --against <baseline>` so criteria edits by workers are caught mechanically.
 - `evidence` paths are relative to the directory containing `features.json` (override with `--base`); point at proof artifacts — test output, E2E logs, screenshots — not at the code itself.

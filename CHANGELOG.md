@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Project-state scaffolder**
+  `harness/scripts/scaffold_project.py` (stdlib-only): instantiates the
+  project-state file set from `prompts/artifacts/project-state.md` for a
+  new full-project run — `PROJECT.md`, `features.json` (seeded from
+  `--features` after validating it with `check_features.py`, or a
+  `passes: false` placeholder that can never pass a gate), append-only
+  `progress.md`, an executable `init.sh` stub that exits non-zero until
+  replaced, and `checkpoints/` with the `features.baseline.json` tamper
+  snapshot. Refuses to overwrite existing state files. Wired into
+  `context-management.md` §6, `project-lifecycle.md` §1, the artifact
+  template, and the README; 11 tests.
+
 ## [2.1.0] - 2026-07-08
 
 Hardening release: the `features.json` project-state protocol becomes
