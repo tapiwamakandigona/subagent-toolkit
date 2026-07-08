@@ -5,7 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.1.0] - 2026-07-08
+
+Hardening release: the `features.json` project-state protocol becomes
+machine-checkable, and the harness docs absorb operational lessons on
+compaction, fan-out scope changes, and orchestrator succession.
 
 ### Added
 
@@ -20,9 +24,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   orchestrator's baseline (`--against`). Previously the gate and the
   "workers may only flip `passes`" rule were documented but only manually
   checkable. Wired into `context-management.md` §6,
-  `project-lifecycle.md` §2, and the README; 16 tests.
+  `project-lifecycle.md` §2, and the README; 17 tests.
+- **Project-state file templates**
+  `prompts/artifacts/project-state.md`: required shapes for `PROJECT.md`,
+  `progress.md`, `init.sh`, and a worked `features.json` example that
+  passes `check_features.py` verbatim — the state files three harness docs
+  lean on previously had no template anywhere in the pack.
 
 ### Changed
+
+- `harness/schemas/features.schema.json` aligned with the validator:
+  `title`/`acceptance` must contain non-whitespace, evidence strings must
+  be non-empty, and `evidence: null` is explicitly allowed while
+  `passes` is false; `check_features.py` now rejects empty-string
+  evidence in kind.
 
 - `harness/context-management.md`: compaction is a session boundary;
   unambiguous status vocabulary for notes; successor-completeness rule
@@ -213,6 +228,7 @@ taxonomies.
   (`harness/patterns.md`, `harness/context-management.md`), the
   `manifest.py` lint/manifest script, and the `bootstrap.sh` installer.
 
+[2.1.0]: https://github.com/tapiwamakandigona/subagent-toolkit/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/tapiwamakandigona/subagent-toolkit/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/tapiwamakandigona/subagent-toolkit/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/tapiwamakandigona/subagent-toolkit/releases/tag/v1.0.0

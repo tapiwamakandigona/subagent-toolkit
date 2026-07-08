@@ -111,11 +111,19 @@ def check_shape(features, c):
                 f"{name}: field 'passes' is a boolean",
             )
         if "evidence" in entry and entry["evidence"] is not None:
-            ok = isinstance(entry["evidence"], str) or (
+            ok = (
+                isinstance(entry["evidence"], str) and entry["evidence"].strip()
+            ) or (
                 isinstance(entry["evidence"], list)
-                and all(isinstance(item, str) for item in entry["evidence"])
+                and all(
+                    isinstance(item, str) and item.strip()
+                    for item in entry["evidence"]
+                )
             )
-            c.check(ok, f"{name}: evidence is a string or list of strings")
+            c.check(
+                bool(ok),
+                f"{name}: evidence is a non-empty string or list of them",
+            )
         if "milestone" in entry and entry["milestone"] is not None:
             c.check(
                 isinstance(entry["milestone"], str),
