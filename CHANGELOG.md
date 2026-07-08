@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-07-08
+
+Dogfood release: full-project mode was exercised end-to-end on a real
+project (swarmboard), and the friction it surfaced is fixed.
+
 ### Added
 
 - **Project-state scaffolder**
@@ -21,6 +26,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   cleans up after itself — no partial state left behind. Wired into
   `context-management.md` §6, `project-lifecycle.md` §1, the artifact
   template, and the README; 15 tests.
+
+### Fixed
+
+- **Sidecar path-resolution rule documented** — `check_contract.py`
+  resolves relative `artifacts`/`evidence` paths against the report
+  sidecar's own directory; the rule is now stated in the module
+  docstring, `--help`, and `prompts/task-briefing.md` (with the `--base`
+  override). Surfaced by a dogfood run where a project-relative brief
+  caused false FAILs.
+- **Foundation gate wording** — `project-lifecycle.md` §1 no longer
+  demands a "passing (empty) test suite" (impossible on Python 3.12+,
+  where bare `unittest discover` exits 5 with NO TESTS RAN); it now
+  requires at least one trivial smoke test running green.
+- **Scaffolder emits `.gitignore`** — `scaffold_project.py` writes a
+  minimal `.gitignore` (`__pycache__/`) so foundation commits don't pick
+  up bytecode; existing files are preserved and failed runs clean up.
+
 
 ## [2.1.0] - 2026-07-08
 
