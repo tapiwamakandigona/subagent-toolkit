@@ -10,6 +10,7 @@ Template for briefing a subagent. A good brief transfers everything the subagent
 - **BOUNDARIES is mandatory for any parallel fan-out** (single-writer rule — see `../harness/patterns.md`): owned paths the agent may write, plus the named files/dirs it must not touch.
 - Keep the escape hatch line intact: an agent without one guesses instead of reporting.
 - **Cold agents:** if the subagent may not have the ability pack installed, prepend the ABILITY PACK block from the README ("How an orchestrator should prompt a subagent") — this template's `{{abilities_dir}}` paths don't exist until bootstrap runs.
+- **Sidecar paths resolve against the sidecar.** Relative `artifacts`/`evidence` paths in the report.json sidecar resolve against the report.json's own directory — not the agent's CWD or the repo root. That is how `harness/scripts/check_contract.py` checks them (override with `--base DIR`). Brief agents to write sidecar paths relative to the sidecar, or absolute.
 - **Budgets must be calibrated, not decorative.** Give a number the agent can act on (tool calls, wall time, subagent count) scaled to task class — see "Budgets & effort scaling" in `../harness/patterns.md`. "Be efficient" is not a budget.
 
 ## Template
