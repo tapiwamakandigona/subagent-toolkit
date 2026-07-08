@@ -12,7 +12,7 @@ A phase is done when its output artifact exists, meets its gate criteria, and th
 |---|---|---|---|---|
 | **Spec** | orchestrator → product-manager | the idea, one line up | `spec.md` (see `../prompts/artifacts/spec.md`) | every functional requirement carries a machine-checkable acceptance criterion; assumptions logged; **[HUMAN GATE]** |
 | **Architecture** | orchestrator → architect | approved spec | `architecture.md` (see `../prompts/artifacts/architecture.md`) | stack decided with rationale; module map with owners; interface contracts verbatim; design freeze declared |
-| **Foundation** | orchestrator → release-engineer | architecture | scaffolded repo, CI, `init.sh`, initial `features.json` | fresh clone + `init.sh` yields a running skeleton with passing (empty) test suite |
+| **Foundation** | orchestrator → release-engineer | architecture | scaffolded repo, CI, and the state files (`../prompts/artifacts/project-state.md`): `init.sh`, initial `features.json` | fresh clone + `init.sh` yields a running skeleton with passing (empty) test suite |
 | **Milestone loop** | see §2 | task list for the milestone (see `../prompts/artifacts/task-list.md`) | working increment, all milestone features `passes: true` | every acceptance check green; QA defects at [Blocking] severity: zero; checkpoint written |
 | **Release** | orchestrator → release-engineer | final increment | deployed/packaged release + rollback path | E2E verification as a real user; rollback tested or documented; **[HUMAN GATE]** |
 

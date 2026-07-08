@@ -156,7 +156,7 @@ Replace `{{ROLE}}` with one of: `researcher`, `code-worker`, `reviewer`, `design
 v2 adds everything needed to run a *whole project* — not just a task — through a swarm:
 
 - [`harness/project-lifecycle.md`](harness/project-lifecycle.md) — the phase playbook (Spec → Architecture → Foundation → Milestone loop → Release), with instructor/worker pairs, gate criteria, and default `[HUMAN GATE]`s.
-- [`prompts/artifacts/`](prompts/artifacts/) — the project-state artifacts each phase produces: `spec.md`, `architecture.md`, `task-list.md`, `checkpoint.md`.
+- [`prompts/artifacts/`](prompts/artifacts/) — the artifacts each phase produces: `spec.md`, `architecture.md`, `task-list.md`, `checkpoint.md`, plus `project-state.md` — templates and a validator-clean `features.json` example for the durable state files.
 - [`prompts/phase-chain.md`](prompts/phase-chain.md), [`prompts/replan.md`](prompts/replan.md), [`prompts/pre-submit-gate.md`](prompts/pre-submit-gate.md) — chaining phases, recovering from failed plans, and gating every handoff on cleaned-up, re-verified work.
 - [`prompts/standing-setup.md`](prompts/standing-setup.md) — a template for the *operator's* standing system prompt, so the orchestrator itself runs on vetted instructions.
 - Machine-checkable handoffs: every report ships a `report.json` sidecar matching [`harness/schemas/handoff.schema.json`](harness/schemas/handoff.schema.json); validate with `python3 harness/scripts/check_contract.py <report.json>` — artifacts must exist and be non-empty before a handoff is accepted.
