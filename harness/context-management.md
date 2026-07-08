@@ -96,7 +96,7 @@ then summarize the middle and mark every elision explicitly ("~40 tool calls eli
 
 ## 6. Project state protocol
 
-For project-scale runs (multiple milestones, multiple sessions — see [`project-lifecycle.md`](project-lifecycle.md)), ad-hoc notes aren't enough. Keep a fixed file set at the project root; it is the project's memory, and no context window is. Templates and a worked `features.json` example: [`../prompts/artifacts/project-state.md`](../prompts/artifacts/project-state.md).
+For project-scale runs (multiple milestones, multiple sessions — see [`project-lifecycle.md`](project-lifecycle.md)), ad-hoc notes aren't enough. Keep a fixed file set at the project root; it is the project's memory, and no context window is. Templates and a worked `features.json` example: [`../prompts/artifacts/project-state.md`](../prompts/artifacts/project-state.md); instantiate the whole set (baseline snapshot included) with `python3 harness/scripts/scaffold_project.py <dir> --name N --goal G [--features seed.json]`.
 
 | File | Contents | Who writes |
 |---|---|---|
