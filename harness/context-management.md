@@ -114,6 +114,8 @@ Why `features.json` is JSON and why workers can't edit acceptance criteria: stru
 
 **Constant-context restart:** never continue an old thread into a new task. Each task starts a fresh context briefed from the state files, so task #50 starts as lean as task #5. Long threads accumulate rot; state files don't.
 
+**Successor-completeness rule:** the state files must be sufficient for a successor with *zero* shared memory — the test is "fresh clone + state files + secrets from the human operator = full resumption". Secrets never live in the state files; they are re-issued to the successor by the operator out-of-band. If finishing the job ever required knowledge that exists only in your context window or scattered shell state, that is a state-protocol bug: write it into the files before you stop.
+
 **Orchestrator succession:** an orchestrator nearing context exhaustion doesn't push through — it writes a final checkpoint (current phase, in-flight delegations, pending verifications, next step) plus a successor brief pointing at the state files, then stops. The successor runs the session-start ritual and continues. A run should survive the death of any single context window, including the orchestrator's.
 
 ---

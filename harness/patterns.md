@@ -49,6 +49,10 @@ The default backbone. Everything else is a variation.
 - *Actions carry implicit decisions.* Every edit or output embeds choices (naming, structure, interpretation) the brief didn't specify. Parallel writers each decide differently, and the conflicts surface only at integration. This is why fan-out suits read-heavy work and betrays write-heavy work — see "When NOT to multi-agent" below.
 - *Uneven task sizes.* One 3-hour task among five 10-minute tasks means you wait 3 hours anyway. Split the big one or start it first.
 
+**Variations:**
+- **Delta shard (mid-run scope addition).** When the goal grows *while* a fan-out is running ("also cover X"), don't re-brief running agents — their briefs are immutable in practice and mid-flight edits produce half-old, half-new work. Spawn one new shard scoped explicitly to the *difference* ("only what differs about X vs. the areas siblings already own; their scopes are excluded — assume their coverage exists"). Cheap, conflict-free, and the integration step already exists.
+- **Convergence check (research fan-outs).** For read-only fan-outs, verification has a cheap extra tool: compare *independent* shards' claims about the same load-bearing facts (dates, prices, limits, policy). Independent agreement from disjoint source sets is strong evidence; disagreement marks exactly where the orchestrator must dig before integrating. Contradictions a shard itself flags in its sources are findings to preserve, not defects to reconcile away. This supplements — never replaces — artifact checks, and only works if shards were briefed on disjoint scopes with independent sourcing.
+
 ---
 
 ## 3. Pipeline
