@@ -85,8 +85,8 @@ def evidence_paths(entry):
 
 
 def check_shape(features, c):
-    """Validate every entry against the pinned shape; returns id -> entry."""
-    seen = {}
+    """Validate every entry against the pinned shape."""
+    seen = set()
     for i, entry in enumerate(features):
         label = entry.get("id") if isinstance(entry, dict) else None
         name = label if isinstance(label, str) and label else f"entry #{i}"
@@ -104,7 +104,7 @@ def check_shape(features, c):
                 f"{name}: id is a lowercase slug",
             )
             if c.check(entry["id"] not in seen, f"{name}: id is unique"):
-                seen[entry["id"]] = entry
+                seen.add(entry["id"])
         if "passes" in entry:
             c.check(
                 isinstance(entry["passes"], bool),
@@ -121,15 +121,14 @@ def check_shape(features, c):
                 isinstance(entry["milestone"], str),
                 f"{name}: field 'milestone' is a string",
             )
-    return seen
 
 
 def check_evidence(features, base, c):
     """Every passes:true feature needs evidence that exists and is non-empty."""
-    for entry in features:
+    for i, entry in enumerate(features):
         if not isinstance(entry, dict) or entry.get("passes") is not True:
             continue
-        name = entry.get("id") or "entry"
+        name = entry.get("id") or f"entry #{i}"
         paths = evidence_paths(entry)
         if not c.check(bool(paths), f"{name}: passes:true has evidence attached"):
             continue
@@ -138,6 +137,11 @@ def check_evidence(features, base, c):
             if not path.is_absolute():
                 path = base / path
             if not c.check(path.exists(), f"{name}: evidence path exists: {raw}"):
+                continue
+            if not c.check(
+                path.is_file() or path.is_dir(),
+                f"{name}: evidence path is a regular file or directory: {raw}",
+            ):
                 continue
             if path.is_file():
                 ok = path.stat().st_size > 0
@@ -212,7 +216,7 @@ def main(argv):
     )
     args = parser.parse_args(argv[1:])
 
-    if args.milestone and not args.gate:
+    if args.milestone is not None and not args.gate:
         print("error: --milestone requires --gate", file=sys.stderr)
         return 2
     features_path = Path(args.features)
