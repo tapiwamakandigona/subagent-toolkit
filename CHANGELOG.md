@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **features.json validator + milestone gate**
+  `harness/scripts/check_features.py` (stdlib-only, mirrors
+  `check_contract.py`): validates the project feature list against the new
+  `harness/schemas/features.schema.json`, enforces evidence-of-done (every
+  `passes: true` needs evidence paths that exist and are non-empty), runs
+  the milestone gate from `project-lifecycle.md` §2 (`--gate
+  [--milestone M]`), and diff-checks the worker-frozen fields
+  (`id`/`title`/`acceptance`, no additions/removals) against the
+  orchestrator's baseline (`--against`). Previously the gate and the
+  "workers may only flip `passes`" rule were documented but only manually
+  checkable. Wired into `context-management.md` §6,
+  `project-lifecycle.md` §2, and the README; 16 tests.
+
+### Changed
+
+- `harness/context-management.md`: compaction is a session boundary;
+  unambiguous status vocabulary for notes; successor-completeness rule
+  (state files must suffice for a zero-memory successor).
+- `harness/patterns.md`: fan-out variations — delta shard for mid-run scope
+  additions, convergence check for research fan-outs.
+
 ## [2.0.0] - 2026-07-04
 
 Full-project autonomy release: the pack graduates from task-level delegation
