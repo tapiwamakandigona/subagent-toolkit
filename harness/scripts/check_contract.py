@@ -9,6 +9,11 @@ and then checks the evidence-of-done rule: every claimed artifact path must
 exist on disk and be non-empty. A report over missing artifacts is a claim,
 not a result.
 
+Path resolution rule: relative paths in `artifacts` and `evidence` resolve
+against the report.json's OWN directory — not the current working directory.
+Write sidecar paths relative to the sidecar, or use absolute paths. Pass
+--base DIR to resolve them against a different directory instead.
+
 Usage:
     python3 check_contract.py <report.json> [--base DIR]
 
@@ -94,7 +99,9 @@ def check_paths(report, base, c):
 def main(argv):
     parser = argparse.ArgumentParser(
         prog="check_contract.py",
-        description="Validate a handoff report.json sidecar.",
+        description="Validate a handoff report.json sidecar. Relative "
+        "artifacts/evidence paths resolve against the report.json's own "
+        "directory (not the CWD) unless --base is given.",
     )
     parser.add_argument("report", help="path to the report.json sidecar")
     parser.add_argument(
