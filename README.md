@@ -79,11 +79,13 @@ subagent-toolkit/
 │   ├── patterns.md
 │   ├── context-management.md
 │   ├── project-lifecycle.md   ← full-project playbook (spec → release)
-│   ├── schemas/         ← JSON Schemas: manifest.py output, handoff sidecar
+│   ├── schemas/         ← JSON Schemas: manifest.py output, handoff sidecar,
+│   │                      features.json feature list
 │   └── scripts/         ← manifest.py (JSON manifest + lint), run_evals.py
 │                          (eval validation/runner), check_placeholders.py
 │                          (leftover {{placeholder}} check), check_contract.py
-│                          (handoff sidecar validator) — stdlib only
+│                          (handoff sidecar validator), check_features.py
+│                          (features.json validator + milestone gate) — stdlib only
 └── tests/               ← pytest suite + bootstrap smoke test
 ```
 
@@ -159,6 +161,7 @@ v2 adds everything needed to run a *whole project* — not just a task — throu
 - [`prompts/standing-setup.md`](prompts/standing-setup.md) — a template for the *operator's* standing system prompt, so the orchestrator itself runs on vetted instructions.
 - Machine-checkable handoffs: every report ships a `report.json` sidecar matching [`harness/schemas/handoff.schema.json`](harness/schemas/handoff.schema.json); validate with `python3 harness/scripts/check_contract.py <report.json>` — artifacts must exist and be non-empty before a handoff is accepted.
 - Durable project state (`PROJECT.md`, `features.json`, `progress.md`, `checkpoints/`) and orchestrator succession, per [`harness/context-management.md`](harness/context-management.md) §6 — so a run survives context exhaustion and agent restarts.
+- Machine-checkable feature gates: `features.json` matches [`harness/schemas/features.schema.json`](harness/schemas/features.schema.json); `python3 harness/scripts/check_features.py <features.json> --gate [--milestone M] [--against baseline]` enforces evidence-of-done, the milestone gate, and that workers didn't edit their own acceptance criteria.
 
 ## Design principles
 
