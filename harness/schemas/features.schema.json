@@ -32,8 +32,8 @@
       "evidence": {
         "description": "Proof-artifact path(s) — test output, E2E log, screenshot — backing passes: true. A string path, an array of them, or null while passes is false. Required in practice when passes is true; check_features.py enforces existence and non-emptiness.",
         "oneOf": [
-          { "type": "string", "minLength": 1 },
-          { "type": "array", "items": { "type": "string", "minLength": 1 } },
+          { "type": "string", "pattern": "\\S" },
+          { "type": "array", "items": { "type": "string", "pattern": "\\S" } },
           { "type": "null" }
         ]
       },

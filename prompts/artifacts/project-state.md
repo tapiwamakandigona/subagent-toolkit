@@ -1,6 +1,6 @@
 # Artifact: Project State Files
 
-The required shapes for the four project-state files of `../../harness/context-management.md` §6 — `PROJECT.md`, `features.json`, `progress.md`, `init.sh` — created in the Foundation phase (`../../harness/project-lifecycle.md` §1) and kept true for the rest of the run. The other artifacts in this folder are phase *outputs*; these files are the project's *memory*, and the successor-completeness rule is judged against them.
+The required shapes for four of the five project-state files of `../../harness/context-management.md` §6 — `PROJECT.md`, `features.json`, `progress.md`, `init.sh`; the fifth, `checkpoints/NN-<phase>.md`, has its own sibling template (`checkpoint.md`). Created in the Foundation phase (`../../harness/project-lifecycle.md` §1) and kept true for the rest of the run. The other artifacts in this folder are phase *outputs*; these files are the project's *memory*, and the successor-completeness rule is judged against them.
 
 ## Usage notes
 

@@ -125,6 +125,12 @@ def test_empty_string_evidence_fails_shape(tmp_path):
     r = run_cli(str(path))
     assert r.returncode == 1
     assert "evidence is a non-empty string or list of them" in r.stdout
+    # whitespace-only paths are equally malformed
+    entries[1]["evidence"] = [" "]
+    path.write_text(json.dumps(entries))
+    r = run_cli(str(path))
+    assert r.returncode == 1
+    assert "evidence is a non-empty string or list of them" in r.stdout
 
 
 def test_special_file_evidence_fails_cleanly(tmp_path):
