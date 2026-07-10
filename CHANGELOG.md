@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.1] - 2026-07-10
+
+Dogfood release: the fan-out + integrator pattern was exercised end-to-end
+(3 parallel writers, deliberately conflicting generated files, fresh-context
+integrator), and the two doc gaps it surfaced are fixed. (#9)
+
+### Fixed
+
+- **Worktree isolation is the orchestrator's job**
+  `harness/patterns.md` (integration variant, step 1) and
+  `prompts/task-briefing.md` now require the orchestrator to create a
+  dedicated worktree/clone per parallel git writer *before spawning* and
+  name it in BOUNDARIES. Parallel writers briefed into one shared checkout
+  collide even on separate branches (branch pointer reset under a worker;
+  sibling's untracked files committed).
+- **Sidecar `artifacts`/`evidence` entries are plain paths**
+  `prompts/handoff-report.md` now states that sidecar `artifacts` and
+  `evidence` entries must be bare filesystem paths — no annotations,
+  commands, or branch identifiers (those belong in `verified`/`notes`) —
+  matching what `check_contract.py` actually validates.
+
 ## [2.2.0] - 2026-07-08
 
 Dogfood release: full-project mode was exercised end-to-end on a real
