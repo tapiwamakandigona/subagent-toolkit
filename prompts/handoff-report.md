@@ -61,6 +61,8 @@ Write a `report.json` next to your report (in your run trace directory), matchin
 
 Required fields: `run_id`, `agent`, `status`, `artifacts`. The rest mirror the report sections above (VERIFICATION splits into `verified`/`assumed`); `notes` is a one-line free-text summary. Orchestrators can validate sidecars mechanically with `../harness/scripts/check_contract.py`.
 
+**`artifacts` and `evidence` entries must be plain filesystem paths** — nothing else. `check_contract.py` resolves each entry as a path and fails it otherwise, so no annotations (`"out.txt (12 passed)"`), no commands (`"git log feat/x"`), no descriptions (`"branch feat/x @ abc123"`). Annotated claims and commands belong in `verified`; branch/commit identifiers belong in `notes` or the prose report. If evidence is a command's output, write the output to a file and list that path.
+
 ### Example (filled)
 
 ```text
