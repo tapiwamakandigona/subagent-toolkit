@@ -157,6 +157,8 @@ Replace `{{ROLE}}` with one of: `researcher`, `code-worker`, `reviewer`, `design
 v2 adds everything needed to run a *whole project* — not just a task — through a swarm:
 
 - [`harness/project-lifecycle.md`](harness/project-lifecycle.md) — the phase playbook (Spec → Architecture → Foundation → Milestone loop → Release), with instructor/worker pairs, gate criteria, and default `[HUMAN GATE]`s.
+- [`harness/web-sessions.md`](harness/web-sessions.md) — discipline for browser work on real accounts: explicit long session lifetimes (never provider defaults), 2FA as a designed human-in-the-loop step, hostile-DOM tactics (`:visible` locators, TrustedHTML inserts), and verify-in-the-system-of-record before/after irreversible actions.
+- [`harness/repo-analysis.md`](harness/repo-analysis.md) — "analyse the repo" means full onboarding: inventory everything, read entry docs completely, follow the reference graph, open the binaries, read git metadata, and deliver a VERIFIED/ASSUMED-labelled digest with file citations.
 - [`prompts/artifacts/`](prompts/artifacts/) — the artifacts each phase produces: `spec.md`, `architecture.md`, `task-list.md`, `checkpoint.md`, plus `project-state.md` — templates and a validator-clean `features.json` example for the durable state files.
 - [`prompts/phase-chain.md`](prompts/phase-chain.md), [`prompts/replan.md`](prompts/replan.md), [`prompts/pre-submit-gate.md`](prompts/pre-submit-gate.md) — chaining phases, recovering from failed plans, and gating every handoff on cleaned-up, re-verified work.
 - [`prompts/standing-setup.md`](prompts/standing-setup.md) — a template for the *operator's* standing system prompt, so the orchestrator itself runs on vetted instructions.
