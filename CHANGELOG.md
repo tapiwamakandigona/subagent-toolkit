@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-07-25
+
+The great shrink: 104 files / ~57k words → 10 files (~360 lines of protocol and templates). The v2
+swarm-first ability pack is retired after field use showed it underperformed:
+orchestrated multi-agent runs produced conflicting implicit decisions,
+context lost in handoffs, and unverifiable "done" claims, while a single
+well-harnessed agent with file-based state did better. This matches the
+2025–26 practitioner consensus (Cognition's "Don't Build Multi-Agents",
+Anthropic's context-engineering and long-running-agent guidance, OpenAI's
+harness-engineering notes, the Ralph-loop pattern, and community findings
+that instruction packs past ~150–200 rules degrade adherence).
+
+### Added
+
+- `HARNESS.md` — the entire operating protocol in one file (~1.5k tokens):
+  single-agent default, plan → act → verify → commit loop, fresh-context
+  iteration for long runs, file-based state protocol, lean rules-file
+  guidance, checks-first feedback, loop guards, a four-condition gate for
+  parallelism, and VERIFIED/ASSUMED evidence labeling.
+- `templates/` — five fill-in templates: `AGENTS.md` (lean rules file),
+  `PROJECT.md` (goal + standing decisions), `features.json`
+  (evidence-gated definition of done), `loop.sh` (reference fresh-context
+  loop with stall and iteration guards), `brief.md` (subagent brief for
+  the rare justified fan-out).
+
+### Removed
+
+- All 11 `agents/` role prompts, all 18 `skills/` (with evals and
+  references), all 14 `prompts/` templates and artifacts, the three
+  `harness/` playbooks, schemas, and scripts, `bootstrap.sh` and its
+  manifest/primer machinery, the Claude plugin manifest, and the test
+  suite for the removed machinery. The surviving concepts (state files,
+  briefing shape, verification discipline, path ownership) are folded
+  into `HARNESS.md` and `templates/`.
+
 ## [2.2.1] - 2026-07-10
 
 Dogfood release: the fan-out + integrator pattern was exercised end-to-end

@@ -1,0 +1,13 @@
+{
+  "$comment": "Machine-readable definition of done. Only flip passes to true with evidence (a command that ran, an artifact that exists). Workers never edit verify commands or acceptance criteria — that's a spec change, report it.",
+  "features": [
+    {
+      "id": "F1",
+      "title": "{{short feature name}}",
+      "acceptance": "{{checkable sentence — verifiable by inspection or command}}",
+      "verify": "{{command that proves it, e.g. 'pytest tests/test_f1.py -q'}}",
+      "passes": false,
+      "evidence": ""
+    }
+  ]
+}
