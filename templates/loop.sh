@@ -43,5 +43,10 @@ done
 
 # Trust the checks, not the marker: final verification gate.
 if [ -x ./verify.sh ]; then
-  ./verify.sh && echo "VERIFIED green" || { echo "marker/iterations hit but checks FAIL"; exit 1; }
+  if ./verify.sh; then
+    echo "VERIFIED green"
+  else
+    echo "marker/iterations hit but checks FAIL"
+    exit 1
+  fi
 fi
