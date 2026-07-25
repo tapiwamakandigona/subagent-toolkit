@@ -5,11 +5,13 @@ from `templates/` only when you need them.
 
 ## Principles
 
-1. **One agent by default.** A single agent with clean context outperforms a
-   swarm on almost everything. Handoffs bury intent, multiply tokens, and
-   let parallel writers make conflicting implicit decisions ("Don't Build
-   Multi-Agents" — Cognition). Parallelize only when the work splits into
-   genuinely independent, read-heavy or disjoint-path tracks.
+1. **One agent. No subagents.** A single agent with clean context
+   outperforms a swarm on almost everything: handoffs bury intent, multiply
+   tokens, and let parallel writers make conflicting implicit decisions
+   ("Don't Build Multi-Agents" — Cognition). This harness does not spawn
+   subagents, period. If work seems to demand parallelism, sequence it —
+   or run two independent harnessed loops on fully separate repos/branches,
+   started and integrated by a human.
 2. **The repo is the brain; agents are disposable.** All state lives in
    files and git, never in a model's memory. Any fresh agent must be able to
    resume from the state files alone.
@@ -46,6 +48,13 @@ important unfinished task, does it, verifies, commits, exits. The loop
 restarts it. Progress lives in files and git, so restarts lose nothing.
 `templates/loop.sh` is the reference loop with stop conditions and guards.
 
+Two rules keep the loop honest: **one task per iteration** (protects the
+context window from filling with noise), and **search before assuming** —
+check the repo and progress.md before treating anything as unbuilt, so
+iterations don't redo or overwrite finished work. Prefer fresh restarts
+over compaction for long runs: a summary of a summary is a blurry
+photocopy of the plan, and a persistent session reintroduces context rot.
+
 ## State files
 
 Three files, kept current, are the resume point for any fresh agent:
@@ -75,6 +84,13 @@ go in skills or `docs/`, not here. Template: `templates/AGENTS.md`.
   agent's claim. Reject "done" without evidence.
 - Guard rails that must hold (don't touch tests, don't edit generated
   files) belong in hooks/CI, not prose — deterministic beats probabilistic.
+- **Check integrity.** The fastest path to green is editing the check; a
+  weakened assertion, a skipped test, or a hardcoded return is a failure,
+  not a fix. Tests and check scripts are read-only unless the task IS the
+  check — and then the diff to them is called out explicitly.
+- **Completion must be machine-verifiable.** "Run until done" is only as
+  safe as its stop signal; prefer an exit code (`make ci`, features.json
+  all-passing) over a model reading a transcript and judging "looks done".
 
 ## Loop guards
 
@@ -88,23 +104,23 @@ go in skills or `docs/`, not here. Template: `templates/AGENTS.md`.
   new brief; then descope or escalate. Never retry the identical prompt
   blindly, and never fabricate what a failed run "would have found".
 
-## Parallelism (the exception)
+## No subagents
 
-Gate before spawning anything — all four must be true:
+There is no parallelism gate because there is no parallelism: this harness
+never spawns subagents. Reasons, so the temptation stays dead:
 
-1. The work splits into tracks with **disjoint file/path ownership** (or
-   separate git worktrees/branches).
-2. Tracks don't need to talk while running; a summary handoff is enough.
-3. Each track is verifiable on its own.
-4. You can name at least 3 genuinely independent tracks — otherwise a
-   single agent is faster and cheaper.
+- Parallel writers make conflicting implicit decisions that surface only
+  at integration, where they cost more than the parallelism saved.
+- A brief can't transfer full context; a summary handoff loses exactly the
+  nuance that made the work hard.
+- Subagent claims arrive unverified; re-verifying them costs as much as
+  doing the work.
+- Field result (v2, this repo): swarm output was worse than one
+  well-harnessed agent. The 2025–26 practitioner consensus agrees.
 
-Rules when you do: one writer per path set, interfaces frozen and quoted
-verbatim in every brief, serial integration in a fresh context, regenerate
-(never hand-merge) generated files. Brief template: `templates/brief.md` —
-objective, output contract, boundaries, budget, escape hatch, ≤500 words.
-Read-heavy fan-out (research, audits, log analysis) is the sweet spot;
-write-heavy fan-out is where swarms betray you.
+If throughput is genuinely the bottleneck, run separate harnessed loops on
+fully separate repos or branches — started, owned, and integrated by a
+human, not spawned by an agent.
 
 ## Evidence
 
