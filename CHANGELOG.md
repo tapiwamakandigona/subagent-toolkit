@@ -22,15 +22,16 @@ that instruction packs past ~150–200 rules degrade adherence).
 ### Added
 
 - `HARNESS.md` — the entire operating protocol in one file (~1.5k tokens):
-  single-agent default, plan → act → verify → commit loop, fresh-context
-  iteration for long runs, file-based state protocol, lean rules-file
-  guidance, checks-first feedback, loop guards, a four-condition gate for
-  parallelism, and VERIFIED/ASSUMED evidence labeling.
-- `templates/` — five fill-in templates: `AGENTS.md` (lean rules file),
+  single agent with **no subagents at all**, plan → act → verify → commit
+  loop, fresh-context iteration for long runs (one task per iteration,
+  search-before-assuming, restarts over compaction), file-based state
+  protocol, lean rules-file guidance, checks-first feedback with check
+  integrity (never edit the check to pass it) and machine-verifiable
+  completion signals, loop guards, and VERIFIED/ASSUMED evidence labeling.
+- `templates/` — four fill-in templates: `AGENTS.md` (lean rules file),
   `PROJECT.md` (goal + standing decisions), `features.json`
   (evidence-gated definition of done), `loop.sh` (reference fresh-context
-  loop with stall and iteration guards), `brief.md` (subagent brief for
-  the rare justified fan-out).
+  loop with stall and iteration guards).
 
 ### Removed
 
@@ -39,8 +40,11 @@ that instruction packs past ~150–200 rules degrade adherence).
   `harness/` playbooks, schemas, and scripts, `bootstrap.sh` and its
   manifest/primer machinery, the Claude plugin manifest, and the test
   suite for the removed machinery. The surviving concepts (state files,
-  briefing shape, verification discipline, path ownership) are folded
-  into `HARNESS.md` and `templates/`.
+  verification discipline) are folded into `HARNESS.md` and `templates/`.
+- Subagents entirely: the parallelism gate and `templates/brief.md` were
+  cut before release. The harness never spawns subagents; if throughput
+  demands it, run separate harnessed loops on separate repos/branches,
+  owned and integrated by a human.
 
 ## [2.2.1] - 2026-07-10
 

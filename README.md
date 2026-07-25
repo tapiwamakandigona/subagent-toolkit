@@ -17,8 +17,7 @@ templates/
 ├── AGENTS.md           ← lean always-loaded rules file (≤100 lines when filled)
 ├── PROJECT.md          ← goal + standing decisions; resume point for fresh agents
 ├── features.json       ← machine-readable definition of done (evidence-gated)
-├── loop.sh             ← reference fresh-context loop with stall/iteration guards
-└── brief.md            ← subagent brief, for the rare justified fan-out
+└── loop.sh             ← reference fresh-context loop with stall/iteration guards
 ```
 
 ## Usage
@@ -33,7 +32,7 @@ ceremony — the pack is small enough to read whole.
 
 ## The five ideas
 
-1. One agent by default; parallelize only genuinely independent tracks.
+1. One agent, always. No subagents — sequence the work instead.
 2. The repo is the brain; agents are disposable workers.
 3. Checks (tests/lint/gates) are the highest-leverage harness component.
 4. Lean context wins — every always-loaded line must earn its place.
