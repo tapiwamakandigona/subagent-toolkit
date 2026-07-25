@@ -5,10 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.0.1] - 2026-07-25
 
 ### Added
 
+- HARNESS.md "Credentials" section: pasting credentials into chat **is**
+  the per-environment provisioning step — agents store them immediately in
+  a locked-down file outside any repo (dir `700`, file `600`), confirm the
+  path, flag plaintext/reuse exposure once with rotation advice, then
+  proceed. Values never appear in commits, logs, reports, prompts, or state
+  files; missing credentials mean ask, never invent. Added after a fresh
+  external agent read "credentials are provisioned per environment" as a
+  reason to refuse storing pasted credentials.
 - HARNESS.md "Browser & authenticated sessions" section and an AGENTS.md
   template boundary: when an agent logs into a site via a browser, open a
   **6-hour long-running session** (SDK `get_browser(name,
