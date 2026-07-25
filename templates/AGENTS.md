@@ -27,7 +27,9 @@ Stack: {{languages, frameworks, versions that matter}}.
 ## Boundaries
 
 **Always:** commit after each verified task; update `progress.md`;
-run {{test_cmd}} before marking anything done.
+run {{test_cmd}} before marking anything done; open browser logins as
+6-hour sessions (SDK: `get_browser(name, timeout_seconds=21600)`) and
+reconnect to one named session instead of re-creating it.
 
 **Ask first:** {{destructive ops, schema migrations, spending money,
 new dependencies}}.

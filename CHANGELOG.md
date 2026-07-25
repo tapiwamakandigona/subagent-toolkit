@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- HARNESS.md "Browser & authenticated sessions" section and an AGENTS.md
+  template boundary: when an agent logs into a site via a browser, open a
+  **6-hour long-running session** (SDK `get_browser(name,
+  timeout_seconds=21600)`; 21600s is the Browserbase per-session ceiling)
+  instead of the short 300s default, reconnect to one named session rather
+  than re-creating it, treat 2FA as a human handoff, and confirm login with
+  an authenticated URL/DOM element. Grounded in a real Google login run
+  (2026-07-25): 6h timeout verified accepted; site auth cookies verified to
+  persist ~400 days, so the browser session lifetime — not the cookies — is
+  the binding constraint.
+
 ## [3.0.0] - 2026-07-25
 
 The great shrink: 104 files / ~57k words → 10 files (~360 lines of protocol and templates). The v2
