@@ -1,0 +1,5 @@
+# Trusted hooks (Codex-style trust-by-hash). One line per hook:
+#   <sha256 of file contents> hooks/<name>
+# Hooks that exist but are not pinned here are skipped and logged, never run.
+# Supported names: pre_iteration (nonzero blocks the iteration), post_iteration
+# (nonzero fails the iteration). Regenerate a line with: sha256sum hooks/<name>

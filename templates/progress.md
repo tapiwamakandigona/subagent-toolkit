@@ -1,5 +1,6 @@
-# Progress — append only
+# progress.md — append-only
 
-Record each task's plan, change, verification command/result, evidence artifact,
-and commit reference when available. Include failures and their disposition.
-Never put credential values or raw authentication output in this file.
+<!-- One entry per iteration or session. Newest at the bottom. Record failures
+     verbatim; they are data. Never rewrite or delete earlier entries. -->
+
+- {{date}}: planned — {{one line}}

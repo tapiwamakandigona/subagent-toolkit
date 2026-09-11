@@ -1,5 +1,5 @@
 {
-  "$comment": "Definition of done. Fill criteria and reviewed verify commands before starting. check_features.py freezes these fields during a run. Only passes and evidence may change. Evidence is a nonempty project-relative artifact file, not a command or claim. The reviewed verify.sh must execute the actual checks; the feature checker never executes arbitrary verify strings.",
+  "$comment": "Definition of done. Fill criteria and reviewed verify commands before starting. check_features.py freezes id/title/acceptance/verify during a run; only passes and evidence may change. Evidence is a nonempty project-relative artifact written by verify.sh and containing the run id (HARNESS_RUN_ID) - not a command, not a claim, not an agent-written note. The feature checker never executes verify strings; the reviewed verify.sh does.",
   "features": [
     {
       "id": "F1",

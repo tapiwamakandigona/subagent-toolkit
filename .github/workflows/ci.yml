@@ -17,10 +17,13 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: ShellCheck templates
-        run: shellcheck templates/loop.sh templates/verify.sh
+        run: shellcheck -s sh templates/loop.sh templates/verify.sh templates/sandbox.sh templates/init.sh
 
       - name: Validate feature-template JSON syntax
         run: python3 -c "import json; json.load(open('templates/features.json'))"
+
+      - name: Python syntax of the checker
+        run: python3 -m py_compile templates/check_features.py
 
       - name: Offline harness behavior and integrity tests
         run: python3 -m unittest discover -s tests -v

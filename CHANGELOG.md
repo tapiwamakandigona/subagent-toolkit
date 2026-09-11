@@ -5,6 +5,76 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] - 2026-09-11
+
+Imports the load-bearing mechanisms of the September-2026 frontier harnesses
+(Codex running GPT-6 Astra, Claude Code / Anthropic's long-running-agent
+harness, the Ralph loop) as portable POSIX shell + stdlib Python, keeps the
+single-agent principle, and states what it cannot enforce. Research and the
+side-by-side comparison are in `docs/HARNESS-COMPARISON.md`. Builds on the
+unreleased hardening branch (`viktor/harness-hardening-audit-2026-09`).
+
+### Added
+
+- **Two-phase run** (Codex cloud environments): `init.sh` runs once with
+  network before the check baseline; iterations run through `sandbox.sh`
+  (environment allowlist, network off unless `HARNESS_NET=1`, bubblewrap when
+  present, honest `HARNESS_SANDBOX` mode in the ledger,
+  `HARNESS_REQUIRE_SANDBOX=1` to refuse unsandboxed runs).
+- **Capability vs approval** (Codex): agents list "ask first" actions in
+  `report.json → approval_requests`; the loop writes `APPROVAL_REQUESTED.md`
+  and exits 5 before running checks.
+- **Structured iteration report** (Codex `--output-schema`): `report.json`
+  with task, status, claims each labeled VERIFIED (with an existing evidence
+  file) or ASSUMED, approval requests and next task; missing or malformed
+  reports are failures, never progress.
+- **Run-bound evidence** (Anthropic default-FAIL contract): completion
+  requires each feature's evidence artifact to contain the current
+  `HARNESS_RUN_ID`, i.e. to have been written by `verify.sh` in this run.
+- **Independent evaluator slot** (Anthropic generator/evaluator, cwc
+  `evaluator.md`): optional `EVALUATOR_CMD` + `EVALUATOR.md` runs after each
+  successful iteration, fresh context, read-only (fingerprint-enforced, exit
+  6 on any write), `NEEDS_WORK` findings feed the next brief and block
+  completion. Sequential; not a subagent.
+- **Planner prompt** (Anthropic initializer): `PLANNER.md` expands a brief
+  into `features.json`, `verify.sh`, `init.sh`, `PROJECT.md`, `AGENTS.md`.
+- **Hooks trusted by hash** (Codex): `hooks/pre_iteration` (nonzero blocks)
+  and `hooks/post_iteration` (nonzero fails) run only when `hooks.lock` pins
+  their sha256; unpinned or changed hooks are skipped and logged.
+- **Durability** (Kendr rubric gap): hash-chained append-only run ledger in
+  `.harness/runs/<run>.jsonl` (`check_features.py chain` verifies), single-
+  writer lock with stale-pid reclamation.
+- **Caps and operator controls**: `ITER_TIMEOUT` (default 1h, requires
+  `timeout(1)` or explicit `0`), `MAX_MINUTES`, `OUTPUT_CAP`; `AGENT_STOP`
+  halts (exit 7); `STEER.md` is injected into the next brief once.
+- `docs/HARNESS-COMPARISON.md`: mechanism-by-mechanism comparison with
+  Codex, Claude Code, Anthropic's harness, Ralph and OpenHands; self-scored
+  Kendr rubric (27 → ~50 of 100, ASSUMED); what was imported and what was
+  deliberately left out; sources.
+- 23 new behavioural tests (55 total) covering every mechanism above;
+  CI shellchecks all four scripts and byte-compiles the checker.
+
+### Changed
+
+- Completion contract: the printed `DONE_ALL` marker is replaced by
+  `report.json` `"status": "complete"`, which only asks the loop to run the
+  independent gate.
+- Exit codes: 0 complete · 1 repeated failure · 2 stalled · 3 setup ·
+  4 cap (iterations or minutes) · 5 approval required · 6 integrity ·
+  7 operator stop.
+- Integrity freeze now also covers `hooks/`, `hooks.lock`, `sandbox.sh`,
+  `init.sh`; `.harness/`, `report.json`, `evaluation.json`, `STEER.md` and
+  `APPROVAL_REQUESTED.md` are excluded from the progress fingerprint.
+- HARNESS.md gains "Two phases per run", "Capability vs. approval",
+  "Independent evaluator", "Honest limits"; README lists the 13 templates.
+
+### Known limits
+
+- `sandbox.sh` is not a kernel boundary without bubblewrap; it says so.
+- `MAX_MINUTES` is exercised by code review, not by the fast test suite.
+- Evidence binding proves provenance (this run's checks wrote it), not
+  sufficiency of the checks; reviewing `verify.sh` remains a human job.
+
 ## [3.0.1] - 2026-07-25
 
 ### Added

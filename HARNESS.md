@@ -11,7 +11,8 @@ from `templates/` only when you need them.
    ("Don't Build Multi-Agents" — Cognition). This harness does not spawn
    subagents, period. If work seems to demand parallelism, sequence it —
    or run two independent harnessed loops on fully separate repos/branches,
-   started and integrated by a human.
+   started and integrated by a human. (A sequential, read-only evaluator
+   pass is not a subagent — see "Independent evaluator".)
 2. **The repo is the brain; agents are disposable.** All state lives in
    files and git, never in a model's memory. Any fresh agent must be able to
    resume from the state files alone.
@@ -34,7 +35,9 @@ Every unit of work follows plan → act → verify → commit:
 
 1. **Plan.** Write the plan as a doc before acting (task list with
    checkable definitions of done). A bad plan beats no plan because a bad
-   plan is visible.
+   plan is visible. For a new build, run `templates/PLANNER.md` once first:
+   it expands a short brief into `features.json` (all failing), `verify.sh`,
+   `init.sh`, `PROJECT.md` — a maintainer reviews these before the loop.
 2. **Act.** Execute one task. If execution reveals the plan is wrong,
    revise the plan doc first, then continue.
 3. **Verify.** Run the checks. "It should work" is not evidence; a passing
@@ -44,16 +47,35 @@ Every unit of work follows plan → act → verify → commit:
 
 For long work, run this loop with **fresh context per iteration**
 (Ralph-style): the agent re-reads the state files, picks the single most
-important unfinished task, does it, verifies, commits, exits. The loop
-restarts it. Progress lives in files and git, so restarts lose nothing.
-`templates/loop.sh` is the reference loop with stop conditions and guards.
+important unfinished task, does it, verifies, commits, writes `report.json`,
+exits. `templates/loop.sh` restarts it. Progress lives in files and git, so
+restarts lose nothing. Prefer fresh restarts over compaction: a summary of a
+summary is a blurry photocopy of the plan, and a persistent session
+reintroduces context rot and "context anxiety" (wrapping up early as the
+window fills).
 
 Two rules keep the loop honest: **one task per iteration** (protects the
 context window from filling with noise), and **search before assuming** —
 check the repo and progress.md before treating anything as unbuilt, so
-iterations don't redo or overwrite finished work. Prefer fresh restarts
-over compaction for long runs: a summary of a summary is a blurry
-photocopy of the plan, and a persistent session reintroduces context rot.
+iterations don't redo or overwrite finished work.
+
+### Two phases per run
+
+Imported from Codex cloud environments: **setup** runs once with network
+and full environment (`init.sh`: install, start, smoke-test), then the check
+baseline is frozen and **agent iterations** run offline by default through
+`sandbox.sh` (environment allowlist, no network unless `HARNESS_NET=1`,
+bubblewrap filesystem isolation when available). Secrets belong to phase 1
+and to credential files, never to the agent's environment.
+
+### Capability vs. approval
+
+Also from Codex: what the agent **can** do (sandbox) is separate from when it
+must **ask** (approval). The AGENTS.md boundaries (always / ask first / never)
+are the approval policy. When a task hits "ask first", the agent lists it in
+`report.json → approval_requests` and stops; the loop writes
+`APPROVAL_REQUESTED.md` and exits 5 for a human. Never work around a denied
+capability; ask.
 
 ## State files
 
@@ -63,10 +85,19 @@ Three files, kept current, are the resume point for any fresh agent:
   ritual. Template: `templates/PROJECT.md`.
 - `features.json` — machine-readable definition of done. Each feature has
   `"passes": false` until there is evidence; only flip with evidence.
+  Evidence is an artifact **written by `verify.sh`** and containing the
+  current `HARNESS_RUN_ID`, so a claim cannot masquerade as a check result.
   Template: `templates/features.json`.
 - `progress.md` — append-only history of what was done, what worked, what
   failed. Failures are data; record them so the next iteration doesn't
   repeat them.
+
+Per-iteration artifacts: `report.json` (the agent's structured report —
+task, status, claims each labeled VERIFIED/ASSUMED with evidence,
+approval requests, next task; validated and archived by the loop) and, when an
+evaluator is configured, `evaluation.json`. The loop keeps a hash-chained,
+append-only ledger of every run in `.harness/runs/` (`check_features.py chain`
+verifies it) and a single-writer lock in `.harness/lock`.
 
 ## Rules file (AGENTS.md / CLAUDE.md)
 
@@ -75,34 +106,77 @@ structure map, non-negotiable constraints, three-tier boundaries (always do /
 ask first / never do), and an index to deeper docs. The test for every line:
 "would removing this cause mistakes?" If no, cut it. Task-specific playbooks
 go in skills or `docs/`, not here. Template: `templates/AGENTS.md`.
+Codex reads `AGENTS.md` root-down with nearer files overriding; Claude Code
+reads `CLAUDE.md`. Keep one and symlink the other if both agents are used.
 
 ## Checks
 
 - Wire tests/lint/build so the agent runs them after every change
-  (`make ci` or equivalent — one command, deterministic).
+  (`verify.sh` — one command, deterministic, writes the evidence artifacts).
 - Completion is defined by the checks and `features.json`, not by the
-  agent's claim. Reject "done" without evidence.
+  agent's claim. Reject "done" without evidence. `"status": "complete"` in
+  the report only tells the loop to run the gate.
 - Guard rails that must hold (don't touch tests, don't edit generated
   files) belong in hooks/CI, not prose — deterministic beats probabilistic.
 - **Check integrity.** The fastest path to green is editing the check; a
   weakened assertion, a skipped test, or a hardcoded return is a failure,
-  not a fix. Tests and check scripts are read-only unless the task IS the
-  check — and then the diff to them is called out explicitly.
+  not a fix. `loop.sh` freezes acceptance criteria, `verify.sh`, hooks,
+  workflows and `tests/` at run start and exits 6 on any change; the checker
+  itself runs from a run-local copy so it cannot be edited into compliance.
 - **Completion must be machine-verifiable.** "Run until done" is only as
-  safe as its stop signal; prefer an exit code (`make ci`, features.json
-  all-passing) over a model reading a transcript and judging "looks done".
+  safe as its stop signal; prefer an exit code (`verify.sh`, features.json
+  all-passing with run-bound evidence) over a model judging "looks done".
+- **Hooks are trusted by hash.** `hooks/pre_iteration` and
+  `hooks/post_iteration` run only when `hooks.lock` pins their exact
+  contents (Codex's trust model); changed or unpinned hooks are skipped and
+  logged, never run.
+
+### Independent evaluator (optional, sequential)
+
+Anthropic's harness work found the strongest lever after checks is separating
+the agent that builds from the agent that judges: self-grading skews
+generous. `EVALUATOR_CMD` runs **after** each successful iteration, in a fresh
+context, with `templates/EVALUATOR.md`: it reviews the diff, artifacts and
+report, exercises the work read-only, and writes `PASS` or `NEEDS_WORK` with
+reproducible findings that are fed into the next brief. It is not a subagent:
+nothing runs in parallel, and the loop fingerprints the project before and
+after — an evaluator that changes anything is an integrity violation (exit 6).
+`NEEDS_WORK` blocks completion. Use it when the task sits beyond what the
+model does reliably solo; drop it when a model upgrade makes it dead weight.
 
 ## Loop guards
 
 - **One thing per iteration.** An iteration that tries three tasks fails
   at all of them.
-- **Max iterations.** Hard cap per run; overrun means the task or the
-  checks are wrong, not that you need more loops.
-- **Stall halt.** Two consecutive iterations with no diff and no
-  test-delta → stop and report; don't grind.
+- **Max iterations** (`loop.sh N`, 1–1000) and **wall-clock caps**
+  (`ITER_TIMEOUT` per run, default 1h; `MAX_MINUTES` per loop). Overrun
+  means the task or the checks are wrong, not that you need more loops.
+- **Output cap** (`OUTPUT_CAP`, default 5 MB) — runaway transcripts fail
+  the iteration instead of filling the disk.
+- **Stall halt.** Two consecutive iterations with no project-content delta
+  and no check-status delta → exit 2; don't grind. Progress-log-only writes
+  and commit metadata do not count as progress.
 - **Failure handling.** One retry with the failure quoted verbatim in the
-  new brief; then descope or escalate. Never retry the identical prompt
-  blindly, and never fabricate what a failed run "would have found".
+  new brief; then exit 1 for descope or escalation. Never retry the identical
+  prompt blindly, and never fabricate what a failed run "would have found".
+- **Operator controls.** `touch AGENT_STOP` halts before the next iteration
+  (exit 7); `STEER.md` is injected into the next brief once, then consumed.
+  Watch a run with `tail -f progress.md` and the `.harness/runs/*.jsonl`
+  ledger — no dashboard needed.
+- **Exit codes.** 0 complete · 1 repeated failure · 2 stalled · 3 setup ·
+  4 cap reached · 5 approval required · 6 integrity · 7 operator stop.
+
+## Honest limits
+
+`sandbox.sh` is a best-effort boundary: bubblewrap when installed, else a
+network namespace, else environment scrubbing only — it reports which mode
+ran (`HARNESS_SANDBOX`, ledger `sandbox_mode`) and `HARNESS_REQUIRE_SANDBOX=1`
+refuses to run without isolation. Codex enforces this at the kernel; this
+harness cannot. Integrity checks detect silent check edits, not a hostile
+process running as the same user. Evidence binding proves an artifact came
+from this run's checks, not that the checks are sufficient — that is what
+review of `verify.sh` is for. The evaluator is a model: `PASS` is a second
+opinion, not proof.
 
 ## No subagents
 
