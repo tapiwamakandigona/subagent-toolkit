@@ -1,11 +1,11 @@
 {
-  "$comment": "Machine-readable definition of done. Only flip passes to true with evidence (a command that ran, an artifact that exists). Workers never edit verify commands or acceptance criteria — that's a spec change, report it.",
+  "$comment": "Definition of done. Fill criteria and reviewed verify commands before starting. check_features.py freezes these fields during a run. Only passes and evidence may change. Evidence is a nonempty project-relative artifact file, not a command or claim. The reviewed verify.sh must execute the actual checks; the feature checker never executes arbitrary verify strings.",
   "features": [
     {
       "id": "F1",
       "title": "{{short feature name}}",
-      "acceptance": "{{checkable sentence — verifiable by inspection or command}}",
-      "verify": "{{command that proves it, e.g. 'pytest tests/test_f1.py -q'}}",
+      "acceptance": "{{checkable sentence}}",
+      "verify": "{{reviewed command also covered by verify.sh}}",
       "passes": false,
       "evidence": ""
     }

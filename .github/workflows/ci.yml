@@ -6,15 +6,21 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
-  lint:
-    name: Lint
+  verify:
+    name: Lint and behavioral regression tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: shellcheck loop template
-        run: shellcheck templates/loop.sh
+      - name: ShellCheck templates
+        run: shellcheck templates/loop.sh templates/verify.sh
 
-      - name: validate features.json template
+      - name: Validate feature-template JSON syntax
         run: python3 -c "import json; json.load(open('templates/features.json'))"
+
+      - name: Offline harness behavior and integrity tests
+        run: python3 -m unittest discover -s tests -v
