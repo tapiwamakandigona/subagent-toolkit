@@ -37,6 +37,14 @@ new dependencies}}.
 **Never:** edit tests to make them pass; touch `{{generated_paths}}`;
 commit secrets; force-push.
 
+## Turn discipline
+
+Keep going when a step doesn't need me; put status notes in the same
+message as your next action. Stop only when nothing can move without me
+(print a line `BLOCKED: <reason>`) or before anything destructive or
+irreversible. End each run with: Needs from you / Changed / Found /
+Couldn't confirm.
+
 ## Deeper docs
 
 - `docs/{{topic}}.md` — {{when to read it}}

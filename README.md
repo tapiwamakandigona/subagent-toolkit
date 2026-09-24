@@ -18,7 +18,12 @@ templates/
 ├── PROJECT.md          ← goal + standing decisions; resume point for fresh agents
 ├── features.json       ← machine-readable definition of done (evidence-gated)
 └── loop.sh             ← reference fresh-context loop with stall/iteration guards
+tests/loop_selftest.sh  ← self-test of loop.sh's guards (not copied into projects)
 ```
+
+v3.1 adds turn discipline for Opus 5.5-class models: a text-only turn is a
+report, not "done". It also requires that new tests be seen failing, and
+keeps the qualifiers on every claim. See `CHANGELOG.md`.
 
 ## Usage
 
