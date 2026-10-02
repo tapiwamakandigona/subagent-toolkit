@@ -22,20 +22,29 @@ Stack: {{languages, frameworks, versions that matter}}.
 - `{{dir}}/` — {{what lives here}}
 - `{{dir}}/` — {{what lives here}}
 - State: `PROJECT.md` (decisions), `features.json` (definition of done),
-  `progress.md` (append-only log). Read these first every session.
+  `progress.md` (append-only log). Read the first two and `tail -n 120 progress.md`
+  every session; never the whole log.
 
 ## Boundaries
 
 **Always:** commit after each verified task; update `progress.md`;
-run {{test_cmd}} before marking anything done; open browser logins as
-6-hour sessions (SDK: `get_browser(name, timeout_seconds=21600)`) and
-reconnect to one named session instead of re-creating it.
+run {{test_cmd}} before marking anything done; keep the boot set in budget
+(`sh check_budget.sh`). For browser logins, follow the harness `docs/browser.md`
+(one named 6-hour session; reconnect, don't re-create).
 
 **Ask first:** {{destructive ops, schema migrations, spending money,
 new dependencies}}.
 
 **Never:** edit tests to make them pass; touch `{{generated_paths}}`;
 commit secrets; force-push.
+
+## Turn discipline
+
+Keep going when a step doesn't need me; put status notes in the same
+message as your next action. Stop only when nothing can move without me
+(print a line `BLOCKED: <reason>`) or before anything destructive or
+irreversible. End each run with: Needs from you / Changed / Found /
+Couldn't confirm.
 
 ## Deeper docs
 

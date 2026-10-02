@@ -8,13 +8,19 @@ on:
 
 jobs:
   lint:
-    name: Lint
+    name: Lint and self-tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: shellcheck loop template
-        run: shellcheck templates/loop.sh
+      - name: shellcheck scripts
+        run: shellcheck templates/loop.sh templates/check_budget.sh tests/loop_selftest.sh tests/harness_budget.sh
 
       - name: validate features.json template
         run: python3 -c "import json; json.load(open('templates/features.json'))"
+
+      - name: loop.sh self-test
+        run: sh tests/loop_selftest.sh
+
+      - name: harness budget (HARNESS.md size, README claim, check_budget can fail)
+        run: sh tests/harness_budget.sh

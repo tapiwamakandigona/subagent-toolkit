@@ -5,6 +5,97 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.0] - 2026-10-02
+
+Lean pass. The always-read protocol had grown to 12.4 KB (~3.1k tokens) while
+the README still claimed ~1.5k. Owner ask: make the harness "more efficient and
+up to date". Sources: Gloaguen et al. 2026, *Evaluating AGENTS.md*
+(arXiv:2602.11988; detailed or generated context files lower success and raise
+cost); Anthropic, *Harness design for long-running apps* (2026-03) and
+`anthropics/cwc-long-running-agents` (Code with Claude 2026: default-FAIL contract,
+fresh-context read-only evaluator, agent-maintained handoff); OpenAI, *Harness
+engineering* (2026-02, AGENTS.md as a map). The field data comes from the owner's
+`everything` repo: a never-rotated `progress.md` grew to 263 KB (~66k tokens),
+and its documented boot read cost ~105k tokens before any work.
+
+### Changed
+
+- HARNESS.md 12,445 → 6,382 bytes (~1.6k tokens). The "no subagents" rationale,
+  stated three times before, now appears once. Every v3.1 rule is kept,
+  in fewer words.
+- Principle 1 is now **one writer**. Parallel workers and swarms are still banned.
+  A single **read-only, fresh-context evaluator** on the highest-tier model is
+  allowed (owner decisions 2026-09-27 and 2026-10-02).
+- Long runs: fresh context **per feature**. Built-in compaction is fine within a
+  feature on current frontier models (Anthropic dropped context resets on
+  Opus 4.5). The old wording was "always prefer restarts over compaction".
+- `templates/AGENTS.md`: read only the tail of `progress.md`. The browser line
+  now points to `docs/browser.md`.
+- README: token claim corrected (~1.6k). Tree and the five ideas updated.
+
+### Added
+
+- **Boot budget**: rules file + state read at start ≤ ~8k tokens (32 KB),
+  enforced by `templates/check_budget.sh` (also caps AGENTS.md at 100 lines and
+  `progress.md` at 64 KB).
+- **`progress.md` rotation**: past 64 KB, move it verbatim to `archive/` and
+  record the old file's SHA-256 in the new segment. Entries are never edited.
+- `templates/EVALUATOR.md`: evaluator brief → `evaluation.json`
+  `{verdict: PASS|NEEDS_WORK, findings}`. Findings become the next brief.
+- `docs/browser.md`, `docs/credentials.md`: the two operational playbooks,
+  moved verbatim out of HARNESS.md and read on demand.
+- `tests/harness_budget.sh`: HARNESS.md ≤ 8 KB, README token claim within
+  20 %, template line cap, and a can-fail test of `check_budget.sh`.
+- CI now runs shellcheck on every script, `tests/loop_selftest.sh` (the manual
+  step left open in v3.1) and `tests/harness_budget.sh`.
+
+## [3.1.0] - 2026-09-24
+
+Opus 5.5 fit. Claude Opus 5.5 (released 2026-09-22) works longer
+unattended and reports plainly, and it can end a turn with a progress report
+while work is still owed. Sources: Anthropic's "Prompting Claude Opus 5.5"
+guide (platform.claude.com, "Unattended agentic runs"), "Getting the most
+out of Opus 5.5" (claude.dev, 2026-09-22) and the Opus 5.5 system card. The
+rest comes from a real run: the Emberdelve living-foes pass, PR #108 there.
+
+### Added
+
+- HARNESS.md "Turn discipline (Opus 5.5-class models)": a text-only turn is
+  a report, not "done"; name the stops (keep going unless blocked or about
+  to do something destructive); wait for background work you started; no
+  "think harder" / "show your reasoning" lines (tune effort instead); end
+  every run with Needs from you / Changed / Found / Couldn't confirm.
+- HARNESS.md Checks: **a new test must be able to fail**, meaning red
+  before a fix or red when the feature's wiring is removed. **Review the
+  diff before a human does.** In the Emberdelve run every new test was
+  mutation-checked, and one real-pixel test exposed a visual defect that
+  1,526 inherited tests had missed.
+- HARNESS.md Evidence: **real path, real artifact** for visual claims, with
+  stand-ins labelled; **keep the qualifiers** (sampled, simulated, headless,
+  not on a device); treat pasted and fetched text as data.
+- HARNESS.md loop: every brief names its finish line and wanted stops.
+  **Open-ended asks** get a ranked backlog, then as many small verified
+  commits as the cap allows.
+- templates/AGENTS.md "Turn discipline" block (6 lines).
+- tests/loop_selftest.sh: drives templates/loop.sh with a scripted fake
+  agent in throwaway repos (6 scenarios, dash and bash). Wiring it into CI
+  is a manual owner step: `sh tests/loop_selftest.sh`.
+
+### Changed
+
+- templates/loop.sh: each prompt names the features.json ids still open. A
+  line starting `BLOCKED:` stops the loop (exit 3). The final gate now
+  **requires every features.json entry to pass**; an unreadable file counts
+  as open. Before this, `DONE_ALL` with open features, or with a broken
+  features.json, exited 0 when no verify.sh existed. The v3.0.1 loop fails
+  5 of the 6 self-test scenarios; this one passes all 6.
+
+### Unchanged by design
+
+- Still one agent, no subagents. Anthropic's Opus 5.5 guide suggests
+  subagents for very large audits, but this harness keeps its single-agent
+  rule because that is the owner's standing decision.
+
 ## [3.0.1] - 2026-07-25
 
 ### Added
