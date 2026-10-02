@@ -22,14 +22,15 @@ Stack: {{languages, frameworks, versions that matter}}.
 - `{{dir}}/` — {{what lives here}}
 - `{{dir}}/` — {{what lives here}}
 - State: `PROJECT.md` (decisions), `features.json` (definition of done),
-  `progress.md` (append-only log). Read these first every session.
+  `progress.md` (append-only log). Read the first two and `tail -n 120 progress.md`
+  every session; never the whole log.
 
 ## Boundaries
 
 **Always:** commit after each verified task; update `progress.md`;
-run {{test_cmd}} before marking anything done; open browser logins as
-6-hour sessions (SDK: `get_browser(name, timeout_seconds=21600)`) and
-reconnect to one named session instead of re-creating it.
+run {{test_cmd}} before marking anything done; keep the boot set in budget
+(`sh check_budget.sh`). For browser logins, follow the harness `docs/browser.md`
+(one named 6-hour session; reconnect, don't re-create).
 
 **Ask first:** {{destructive ops, schema migrations, spending money,
 new dependencies}}.
