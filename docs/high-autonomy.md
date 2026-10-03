@@ -49,6 +49,11 @@ default is your user's private `~/.local/share/agent-secrets`, outside repos.
 It stores plaintext files protected by OS permissions, **not an encrypted vault**.
 Use a managed secret manager on shared/multi-tenant hosts and managed OAuth
 when the platform requires it.
+For fresh agents/containers, point `AGENT_SECRET_DIR` to persistent private
+storage mounted for the authorized runtime user. Do not assume a disposable
+home directory survives a new sandbox, and do not loosen 700/600 permissions
+to fix a missing mount or wrong UID. Provision through the platform's secret
+manager or remount the authorized secret instead.
 
 From your own terminal, provision a credential without putting it in argv:
 

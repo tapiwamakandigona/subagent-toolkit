@@ -76,8 +76,8 @@ settings/redaction rather than promising mode 600 protects remote artifacts.
 When exposed by the current platform, Viktor's `list_browser_logins()` shows
 sites/usernames only; focusing the password field and calling
 `browser.inject_login(origin)` types a saved value server-side without returning
-it to the agent. Check tool availability first. The current workspace does not
-expose its injection tool, so this package does not claim it was exercised.
+it to the agent. Check tool availability in the current environment first.
+Saved-login injection was not exercised by these local regression tests.
 If a remote provider cannot meet the account's secret-handling requirements,
 use a controlled local browser or a human login handoff. Ordinary authorized
 browser work can continue once authenticated.

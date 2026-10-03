@@ -98,5 +98,13 @@
     "No live model/provider compliance or CAPTCHA-solving ability was tested",
     "Upstream legacy runner and shell tests unchanged; native legacy Git self-test and remote shellcheck/CI not executed by this local gate",
     "No public push, PR, merge, release or deployed automation"
-  ]
+  ],
+  "last_worktree_gate": {
+    "command": "sh verify.sh",
+    "exit_code": 0,
+    "tests_run": 71,
+    "checked_at": "2026-10-03T06:34:12+00:00",
+    "output_sha256": "82e4ad721f9e49a64d04ecb13a4bcc08a7bd64135ef7ac5fad3634f291f24bf2",
+    "scope": "Real local worktree; synthetic credentials/fake agents and pages"
+  }
 }
