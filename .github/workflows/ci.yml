@@ -24,3 +24,9 @@ jobs:
 
       - name: harness budget (HARNESS.md size, README claim, check_budget can fail)
         run: sh tests/harness_budget.sh
+
+      - name: high-autonomy runner, credential and browser-helper regression tests
+        run: python3 -m unittest tests.test_autonomous_loop -v
+
+      - name: high-autonomy shell syntax
+        run: sh -n templates/high_autonomy_loop.sh && sh -n verify.sh && sh -n check_budget.sh

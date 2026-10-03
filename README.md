@@ -9,6 +9,16 @@ agent — see `CHANGELOG.md` for the evidence trail.
 Works with any agent that can run shell commands and read files: Claude
 Code, Codex CLI, Viktor, or a homegrown loop.
 
+## High-autonomy upgrade (opt-in)
+
+This package adds an evidence-tested profile derived from v3.2.0; it is not a
+new upstream release. Start with [STANDING_SETUP.md](STANDING_SETUP.md) for
+action-first instructions and explicitly authorized password/browser use,
+then [docs/high-autonomy.md](docs/high-autonomy.md) for installation.
+The legacy runner and its tests remain unchanged. New helpers use only the
+Python standard library; a live browser is supplied by your agent platform.
+Run `sh verify.sh` to check the new profile locally.
+
 ## What's here
 
 ```

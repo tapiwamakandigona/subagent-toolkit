@@ -43,3 +43,6 @@ temp/
 # Tool caches and test artifacts
 .fetch_cache/
 .pytest_cache/
+
+# High-autonomy runner's local evidence and process state
+.harness/

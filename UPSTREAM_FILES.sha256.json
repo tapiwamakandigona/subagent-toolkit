@@ -1,0 +1,18 @@
+{
+  ".github/workflows/ci.yml": "296f9f3fe3190d2f5b65bb6f8d5c3d4a16fc7e51e41fec84bac4d170c6642f45",
+  ".gitignore": "4dc7024d3caca509419ce3af725259bc298662c28671a3b7fc1faec30fd4242c",
+  "CHANGELOG.md": "1761d88728d423b5cd113a9fde46102bca1adde1d3cd9026d55605ee98ae95fe",
+  "HARNESS.md": "457178e71f826bff9b386bceb044ec2b77b6dca16611069affb56c371d032517",
+  "LICENSE": "62d8aad123464e73e8b1eb1ea0daad5abbe201487d1a1d60cb52e99e34c08c67",
+  "README.md": "48f69912923a72591e304f56bc2988615a636e0b6211658baedf092b69ea08d5",
+  "docs/browser.md": "601015b4420ccd59e28568f715308378f5ac4b1c6e384d247806ed1ec180c9a1",
+  "docs/credentials.md": "32e2e79040e63e496c332ede05f27382436140d6e2ad50e42e8aedcff59bb1d5",
+  "templates/AGENTS.md": "1b673f0be5c9d4bbff6449c70f52d28423293534ea68ace1b17a28a26c98a3b3",
+  "templates/EVALUATOR.md": "20e33105ef3467808622fb7ed6916a3f841e1560180aad9483d6896228f7c73f",
+  "templates/PROJECT.md": "c4dd020f9fd9e7ebf9c6779bb8039c7f417328efa5694200572ce58061373ff9",
+  "templates/check_budget.sh": "f2a03348e148e7057508565bc3d12e4ef9852e5eeac8623df835b95da01081d3",
+  "templates/features.json": "6a70a4038591361c4451529cd2c952b1547d9ea4214b31354014dcea3d85ec1f",
+  "templates/loop.sh": "14c30c2e3795eb9d8d69d8ebdfa5f1b796cabf329a57a5522653b922b79e5aac",
+  "tests/harness_budget.sh": "a54a8e01c9ef7723e998f1220d3f2ea3a85c7797b065864a5f70a2e6b17d0bf7",
+  "tests/loop_selftest.sh": "8ce6ca618e0dc0719866c3a3fbc42d96d4411c18e1a26ff49956ed14e9ca2aa7"
+}
