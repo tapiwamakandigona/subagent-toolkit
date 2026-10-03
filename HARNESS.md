@@ -123,6 +123,12 @@ report it instead of guessing.
 
 ## On-demand playbooks
 
+**Opt-in high autonomy:** `STANDING_SETUP.md`, `templates/AUTONOMY.md` and
+`docs/high-autonomy.md` make authorized credential/browser use action-first.
+The optional `templates/high_autonomy_loop.sh` requires real completion checks
+and counts meaningful work rather than commits alone. It does not override
+provider policies, platform approvals, or account security controls.
+
 - `docs/credentials.md`: storing operator-pasted credentials (outside any
   repo, `700`/`600`, flag exposure once, values never leave the file).
 - `docs/browser.md`: authenticated browser work (one named 6-hour session,

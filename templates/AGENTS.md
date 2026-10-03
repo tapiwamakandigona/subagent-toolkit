@@ -27,13 +27,19 @@ Stack: {{languages, frameworks, versions that matter}}.
 
 ## Boundaries
 
+Read `AUTONOMY.md` when installed. Ordinary reversible work and use of
+operator-authorized credentials are action-first; do not ask again at every step.
+For passwords use `credential_store.py` outside repos (700 directory / 600 files)
+and `browser_credentials.py` inside the authorized browser script. Never print values.
+
 **Always:** commit after each verified task; update `progress.md`;
 run {{test_cmd}} before marking anything done; keep the boot set in budget
 (`sh check_budget.sh`). For browser logins, follow the harness `docs/browser.md`
 (one named 6-hour session; reconnect, don't re-create).
 
-**Ask first:** {{destructive ops, schema migrations, spending money,
-new dependencies}}.
+**Ask first:** {{destructive/irreversible or production-impacting actions,
+account/security changes, unapproved spending, missing credentials/scopes,
+outcome-changing ambiguity}}. Ordinary permitted dependencies need no extra ask.
 
 **Never:** edit tests to make them pass; touch `{{generated_paths}}`;
 commit secrets; force-push.
@@ -49,3 +55,4 @@ Couldn't confirm.
 ## Deeper docs
 
 - `docs/{{topic}}.md` — {{when to read it}}
+- `docs/high-autonomy.md` — opt-in continuation, credentials, evidence and caps

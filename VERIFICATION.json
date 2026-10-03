@@ -1,0 +1,102 @@
+{
+  "label": "VERIFIED",
+  "prepared_at": "2026-10-03T06:20:59+00:00",
+  "source_revision": "3a4d707bdc7f72d622c5e4ea1976bee76be10d50",
+  "source_repository": "https://github.com/tapiwamakandigona/subagent-toolkit",
+  "source_initial_read": "official GitHub public API and source archive; not a git clone",
+  "source_native_git_clone": "Verified through sanctioned native Git; current main matched the same source revision",
+  "full_gate": {
+    "command": "sh verify.sh",
+    "exit_code": 0,
+    "checked_at": "2026-10-03T06:20:59+00:00",
+    "output_sha256": "6f61664f9c9dc1f1e2165da99ae1d9d1bc935f29c108763801dd8a149ccb8359",
+    "tests_run": 71
+  },
+  "task_boot_budget": {
+    "command": "sh check_budget.sh AGENTS.md PROJECT.md features.json templates/AUTONOMY.md templates/PROMPT.md",
+    "exit_code": 0,
+    "checked_at": "2026-10-03T06:20:59+00:00",
+    "output_sha256": "49d337a1fbc4868a10d4fb507d6a6777f1acd0d03b5e475cb5d80c72301aa15b",
+    "tests_run": null
+  },
+  "feature_receipts": [
+    {
+      "command": "python3 -m unittest tests.test_autonomous_loop.PolicyTests -v",
+      "exit_code": 0,
+      "checked_at": "2026-10-03T06:20:37+00:00",
+      "output_sha256": "4fdef3c98edcf2896c791bc08073725170cd47b5a47fcadcd87600df92e1cd31",
+      "tests_run": 5,
+      "feature_id": "F1"
+    },
+    {
+      "command": "python3 -m unittest tests.test_autonomous_loop.ConfigAndCompletionTests -v",
+      "exit_code": 0,
+      "checked_at": "2026-10-03T06:20:39+00:00",
+      "output_sha256": "9f1bd89383a0744493572ceb5ff81ec825f31dca356b5f36e09dbd7a4ac5b556",
+      "tests_run": 14,
+      "feature_id": "F2"
+    },
+    {
+      "command": "python3 -m unittest tests.test_autonomous_loop.ContinuationTests -v",
+      "exit_code": 0,
+      "checked_at": "2026-10-03T06:20:40+00:00",
+      "output_sha256": "8818e25c68dca37f96c28571550199d7a8e279ff4afb8b73f59b9916bf561481",
+      "tests_run": 6,
+      "feature_id": "F3"
+    },
+    {
+      "command": "python3 -m unittest tests.test_autonomous_loop.GuardTests -v",
+      "exit_code": 0,
+      "checked_at": "2026-10-03T06:20:44+00:00",
+      "output_sha256": "24476f115c1ca401d98d68e565983a4f25130f8d1252b669344906a361def0ed",
+      "tests_run": 9,
+      "feature_id": "F4"
+    },
+    {
+      "command": "python3 -m unittest tests.test_autonomous_loop.IntegrityAndStateTests -v",
+      "exit_code": 0,
+      "checked_at": "2026-10-03T06:20:48+00:00",
+      "output_sha256": "69db5826f18e3870a68d20a02907770a91e854a19c7dbc1911b0ebc62b3c1c85",
+      "tests_run": 7,
+      "feature_id": "F5"
+    },
+    {
+      "command": "python3 -m unittest tests.test_autonomous_loop.PackagingTests -v",
+      "exit_code": 0,
+      "checked_at": "2026-10-03T06:20:49+00:00",
+      "output_sha256": "f25eb2c59633b8d009f27d6b6285a5910a3db3ce24b7e32f2e014162f068b6d3",
+      "tests_run": 6,
+      "feature_id": "F6"
+    },
+    {
+      "command": "python3 -m unittest tests.test_autonomous_loop.CredentialTests -v",
+      "exit_code": 0,
+      "checked_at": "2026-10-03T06:20:50+00:00",
+      "output_sha256": "2e6c36f3b3a66ac88c738325d34c5c50dc907f305a025a76991a0e7727e4baa1",
+      "tests_run": 15,
+      "feature_id": "F7"
+    },
+    {
+      "command": "python3 -m unittest tests.test_autonomous_loop.BrowserCredentialTests -v",
+      "exit_code": 0,
+      "checked_at": "2026-10-03T06:20:50+00:00",
+      "output_sha256": "9f62d4b7be26e70ee0fff95315c6c12b87fa43709c55e2ecd5a6b653c615f2e9",
+      "tests_run": 9,
+      "feature_id": "F8"
+    }
+  ],
+  "features_passing": 8,
+  "safety_scan": {
+    "files_scanned": 30,
+    "findings": [],
+    "scope": "Known token/key patterns, secret files, and internal paths; not a universal secret detector. Operator values were never added."
+  },
+  "scope": [
+    "71 deterministic local tests with scripted fake agents and synthetic credentials",
+    "Browser helper exercised against fake pages, not live accounts or real CAPTCHAs",
+    "No operator credential was tested, stored in this package, or printed",
+    "No live model/provider compliance or CAPTCHA-solving ability was tested",
+    "Upstream legacy runner and shell tests unchanged; native legacy Git self-test and remote shellcheck/CI not executed by this local gate",
+    "No public push, PR, merge, release or deployed automation"
+  ]
+}

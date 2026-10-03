@@ -23,3 +23,14 @@ credentials.
 - **Missing ≠ inventable.** If a task needs a credential that isn't
   present, stop and ask; never guess, scaffold placeholders, or dig one
   out of unrelated chat history.
+
+## High-autonomy credential handoff
+
+Using an operator-authorized credential for the stated service/task is an
+ordinary step, not a new permission request. A fresh agent checks the private
+store's aliases and loads values inside code; it never prints the files into
+model-visible output. `templates/credential_store.py` supplies 700/600 storage,
+availability checks, and output-redacted subprocess use. Browser passwords
+are supported via `templates/browser_credentials.py`; see `docs/browser.md`.
+Missing credentials block only the dependent feature, not independent work.
+Keep actual values out of standing instructions and this package.

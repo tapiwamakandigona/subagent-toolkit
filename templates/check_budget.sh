@@ -1,5 +1,5 @@
 #!/bin/sh
-# Fail CI when the always-read boot set or progress.md outgrows its budget.
+# Fail CI when the actual always-read boot set or progress.md outgrows its budget.
 # Usage: sh check_budget.sh [boot files...]   (defaults below; ~4 bytes per token)
 # Env:   BOOT_MAX (bytes, default 32000), PROGRESS_MAX (default 65536),
 #        RULES_MAX_LINES (default 100).
@@ -7,15 +7,25 @@ set -eu
 BOOT_MAX=${BOOT_MAX:-32000}
 PROGRESS_MAX=${PROGRESS_MAX:-65536}
 RULES_MAX_LINES=${RULES_MAX_LINES:-100}
-if [ "$#" -eq 0 ]; then set -- AGENTS.md PROJECT.md features.json; fi
+if [ "$#" -eq 0 ]; then
+  set -- AGENTS.md PROJECT.md features.json
+  for optional in AUTONOMY.md PROMPT.md CLAUDE.md; do
+    if [ -f "$optional" ]; then set -- "$@" "$optional"; fi
+  done
+fi
 
 status=0
 total=0
+progress_counted=0
 for f in "$@"; do
   if [ ! -f "$f" ]; then echo "check_budget: missing boot file $f"; status=1; continue; fi
   total=$((total + $(wc -c < "$f")))
+  if [ "$f" = progress.md ] || [ "$f" = ./progress.md ]; then progress_counted=1; fi
 done
-echo "check_budget: boot set $total bytes (~$((total / 4)) tokens), limit $BOOT_MAX"
+if [ -f progress.md ] && [ "$progress_counted" -eq 0 ]; then
+  total=$((total + $(tail -n 120 progress.md | wc -c)))
+fi
+echo "check_budget: boot set including progress tail $total bytes (~$((total / 4)) tokens), limit $BOOT_MAX"
 if [ "$total" -gt "$BOOT_MAX" ]; then
   echo "check_budget: FAIL boot set over budget; move depth to docs/ or archive/"; status=1
 fi

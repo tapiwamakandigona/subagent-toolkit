@@ -1,33 +1,83 @@
-# Browser & authenticated sessions
+# Browser authentication — authorized password use
 
-Moved verbatim from HARNESS.md in v3.2.0 so the always-read protocol stays small.
-Read this before any task that logs into a site through a browser.
+Browser login with an operator-provided password is supported when the
+operator owns/controls the account, authorizes the task, and the platform
+permits the flow. Do not refuse merely because a password is involved or
+force an API-only substitute for a specifically requested browser workflow.
 
-When an agent logs into a site through a browser, **open a long-running,
-6-hour session** — not the short default. A run that authenticates and then
-loses the session mid-task has to re-login (re-triggering 2FA and burning a
-human interaction) or silently fails on an expired session.
+## Runtime-only secrets
 
-- **Create the session with a 6-hour keep-alive.** Browser sessions default
-  to a short idle timeout (300s in the Viktor SDK); pass the max instead.
-  In the Viktor SDK: `get_browser(name, timeout_seconds=21600)` (21600s =
-  6h). 6h is the Browserbase per-session ceiling. VERIFIED 2026-07-25:
-  `timeout_seconds=21600` is accepted and the session is created; the 300s
-  default is what causes premature drops.
-- **One named session, reconnect — never re-create.** Use a stable session
-  name (`get_browser("gmail")`) and reconnect to it across script runs;
-  re-creating a session throws away the logged-in state and forces another
-  login. Only `close_browser(name)` when the whole task is done.
-- **Login is a one-time cost per session; do the whole job inside it.**
-  After login the site's own auth cookies persist far beyond the browser
-  session (Google's, VERIFIED, last ~400 days), so the binding constraint
-  is the browser session lifetime, not the cookies — which is exactly why
-  the session must be long. Batch all authenticated work into the single
-  6h window.
-- **2FA is a human handoff.** When a login hits 2FA (device prompt, code,
-  passkey), post the exact prompt to the human and wait for approval; where
-  offered, tick "don't ask again on this device" so a reconnect within the
-  session doesn't re-challenge. Never guess or loop on a challenge.
-- **Evidence before "logged in".** Confirm auth by an authenticated URL or
-  a signed-in DOM element (e.g. landed on `myaccount.google.com`), not by
-  the absence of an error. Label it VERIFIED only with that evidence.
+Store aliases outside every repository in a directory with mode 700, files
+with mode 600. A new agent reads only the store pointer and alias names.
+Inside its script, use `browser_credentials.fill_saved_login`; do not `cat`
+values, pass them in CLI args, or put them in prompts/logs/state files.
+Inspect the actual form to choose selectors; never guess them.
+
+The helper checks the approved HTTPS origin and a real password input. It
+fills but does not submit, claim login, defeat MFA or bypass a CAPTCHA.
+Confirm login using a positive signed-in UI element before claiming success.
+Hand user-presence, approval, recovery and MFA challenges requiring the
+operator to them; do not brute-force or loop on failed authentication.
+
+## Verification pages: capability is not permission
+
+Do not treat every verification page as an automatic refusal. Complete
+ordinary verification using the supported browser/model workflow when the
+site and tool permit automated completion. If the challenge requires human
+action, automation is prohibited, or completion would defeat anti-bot/access
+controls, hand it to the operator. Do not use repeated retries, solver farms,
+identity/fingerprint spoofing, or other evasion as a fallback.
+This package does not test or claim any model's CAPTCHA-solving capability.
+
+## One session, real lifecycle
+
+Use one stable named session for the task. Reconnect while it remains alive
+rather than creating a fresh session per script. On Viktor the currently
+documented helper is `get_browser(name, timeout_seconds=21600)`: that is a
+six-hour hard lifetime from creation, not an idle timeout. Sessions may close
+at turn end; `keep_alive=True` is only for a background job that still needs it.
+It does not promise persistence across new threads/agents. An expired session
+requires a fresh session and legitimate login, not an assumed authenticated state.
+
+## Example (selectors must come from the real form)
+
+```python
+from sdk.utils.browser import get_browser
+from browser_credentials import fill_saved_login, confirm_signed_in
+
+browser = await get_browser("authorized-portal", timeout_seconds=21600)
+await browser.goto(approved_login_url)
+await fill_saved_login(
+    browser.page,
+    authorized_origin=approved_origin,
+    username_alias="portal_username",
+    password_alias="portal_password",
+    username_selector=inspected_username_selector,
+    password_selector=inspected_password_selector,
+)
+await browser.page.locator(inspected_submit_selector).click()
+await browser.page.locator(inspected_signed_in_selector).wait_for(state="visible")
+assert await confirm_signed_in(
+    browser.page, authorized_origin=approved_origin,
+    selector=inspected_signed_in_selector,
+)
+```
+
+This is a script fragment, not a tested live account login. The portable
+helper accepts any Playwright-compatible page; the `sdk` import is Viktor-specific.
+
+## Recording and saved-login injection
+
+Private local files do not make a remote browser's recording private. Do not
+capture login network traffic, dump cookies/headers, record Playwright traces
+with values, or take unmasked login screenshots. Verify provider recording
+settings/redaction rather than promising mode 600 protects remote artifacts.
+
+When exposed by the current platform, Viktor's `list_browser_logins()` shows
+sites/usernames only; focusing the password field and calling
+`browser.inject_login(origin)` types a saved value server-side without returning
+it to the agent. Check tool availability first. The current workspace does not
+expose its injection tool, so this package does not claim it was exercised.
+If a remote provider cannot meet the account's secret-handling requirements,
+use a controlled local browser or a human login handoff. Ordinary authorized
+browser work can continue once authenticated.

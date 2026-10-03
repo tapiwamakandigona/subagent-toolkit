@@ -1,0 +1,42 @@
+{
+  "repository": "https://github.com/tapiwamakandigona/subagent-toolkit",
+  "branch": "main",
+  "revision": "3a4d707bdc7f72d622c5e4ea1976bee76be10d50",
+  "commit_date": "2026-10-02T13:58:55Z",
+  "commit_subject": "Merge pull request #13: v3.2.0 lean pass \u2014 HARNESS.md halved, CI-enforced boot budget, read-only evaluator",
+  "archive_url": "https://codeload.github.com/tapiwamakandigona/subagent-toolkit/tar.gz/3a4d707bdc7f72d622c5e4ea1976bee76be10d50",
+  "archive_sha256": "b98a54ac0c3b8a94e4c615c6e703e85c900caeb700ec716a8e1f3b3777663903",
+  "source_method": "official GitHub public API and source archive; not a git clone",
+  "releases": [
+    {
+      "tag": "v2.2.0",
+      "prerelease": false,
+      "published_at": "2026-07-08T20:49:56Z",
+      "url": "https://github.com/tapiwamakandigona/subagent-toolkit/releases/tag/v2.2.0"
+    },
+    {
+      "tag": "v1.1.0",
+      "prerelease": false,
+      "published_at": "2026-07-02T21:43:23Z",
+      "url": "https://github.com/tapiwamakandigona/subagent-toolkit/releases/tag/v1.1.0"
+    }
+  ],
+  "files": [
+    ".github/workflows/ci.yml",
+    ".gitignore",
+    "CHANGELOG.md",
+    "HARNESS.md",
+    "LICENSE",
+    "README.md",
+    "docs/browser.md",
+    "docs/credentials.md",
+    "templates/AGENTS.md",
+    "templates/EVALUATOR.md",
+    "templates/PROJECT.md",
+    "templates/check_budget.sh",
+    "templates/features.json",
+    "templates/loop.sh",
+    "tests/harness_budget.sh",
+    "tests/loop_selftest.sh"
+  ]
+}
